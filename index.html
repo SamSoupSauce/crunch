@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crunch (Rock Chess) — Custom Draft Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090c10;
+            color: #c9d1d9;
+            user-select: none;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .hex-cell {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .hex-cell:hover {
+            filter: brightness(1.3);
+        }
+
+        .hex-wall {
+            fill: #161b22;
+            stroke: #30363d;
+            stroke-width: 2;
+        }
+
+        .hex-empty {
+            fill: #0d1117;
+            stroke: #21262d;
+            stroke-width: 1.5;
+        }
+
+        .hex-draft-slot {
+            fill: rgba(56, 189, 248, 0.15);
+            stroke: #38bdf8;
+            stroke-width: 2;
+            animation: pulse-blue 1.5s infinite;
+        }
+
+        .hex-valid-move {
+            fill: rgba(46, 160, 67, 0.25);
+            stroke: #3fb950;
+            stroke-width: 2.5;
+            animation: pulse-green 1.5s infinite;
+        }
+
+        .hex-valid-push {
+            fill: rgba(210, 153, 34, 0.25);
+            stroke: #d29922;
+            stroke-width: 2.5;
+            animation: pulse-amber 1.2s infinite;
+        }
+
+        .hex-crunch-vector {
+            fill: rgba(248, 81, 73, 0.35);
+            stroke: #f85149;
+            stroke-width: 3;
+            animation: pulse-red 0.8s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0%, 100% { stroke-opacity: 1; fill-opacity: 0.2; }
+            50% { stroke-opacity: 0.5; fill-opacity: 0.05; }
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { stroke-opacity: 1; fill-opacity: 0.25; }
+            50% { stroke-opacity: 0.5; fill-opacity: 0.1; }
+        }
+
+        @keyframes pulse-amber {
+            0%, 100% { stroke-opacity: 1; fill-opacity: 0.3; }
+            50% { stroke-opacity: 0.6; fill-opacity: 0.15; }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { stroke-opacity: 1; fill-opacity: 0.5; }
+            50% { stroke-opacity: 0.7; fill-opacity: 0.2; }
+        }
+
+        .piece-transition {
+            transition: transform 0.25s ease-out;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #21262d;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <header class="border-b border-gray-800 bg-[#0d1117]/80 backdrop-blur px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-red-950/50">
+                    C
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+                        CRUNCH <span class="text-xs font-normal text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded code-font">v1.6.0-DRAFT</span>
+                    </h1>
+                    <p class="text-xs text-gray-400">Custom Placement Handicap // Universal Control Protocol</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="reconfigureBtn" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs px-3 py-1.5 rounded transition shadow flex items-center gap-1">
+                    ⚙️ Reconfigure Radius &amp; Handicaps
+                </button>
+
+                <button id="resetBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-gray-700 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Restart Match
+                </button>
+
+                <button id="soundToggle" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1.5 rounded transition border border-gray-700">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="setupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0d1117] border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
+            <div class="text-center space-y-1.5">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center font-bold text-black text-2xl mx-auto shadow-lg shadow-red-950/50">
+                    C
+                </div>
+                <h2 class="text-xl font-extrabold text-white tracking-wide">Configure Crunch Grid</h2>
+                <p class="text-xs text-gray-400">Set board radius $R$. Taking a handicap triggers a <b>Custom Draft Phase</b> where you manually position your reduced rock pool.</p>
+            </div>
+
+            <div class="space-y-4 bg-gray-900/50 p-4 rounded-xl border border-gray-800 text-xs">
+                <div class="space-y-1">
+                    <label for="modalRadiusInput" class="font-bold text-gray-200 code-font flex justify-between">
+                        <span>Board Radius (R):</span>
+                        <span class="text-amber-400">Min 4</span>
+                    </label>
+                    <input id="modalRadiusInput" type="number" min="4" max="100" value="5" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-2 text-white font-bold code-font focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 border-t border-b border-gray-800 py-2.5 code-font">
+                    <div>Buffer Corridor (R-1): <span id="bufferRingCount" class="text-emerald-400 font-bold">24</span></div>
+                    <div>Default Rocks/Side: <span id="defaultSideRocksCount" class="text-sky-400 font-bold">8</span></div>
+                    <div>Max Handicap/Side: <span id="maxHandicapDisplay" class="text-rose-400 font-bold">4 Rocks</span></div>
+                    <div>Total Rocks Active: <span id="activeTotalRocks" class="text-amber-400 font-bold">16</span></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div class="space-y-1">
+                        <label for="p1HandicapInput" class="font-semibold text-sky-400 code-font block">P1 Rock Handicap:</label>
+                        <input id="p1HandicapInput" type="number" min="0" value="0" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-1.5 text-white font-bold code-font focus:outline-none focus:border-sky-500">
+                        <span class="text-[10px] text-gray-500 block">Omit N rocks from P1</span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="p2HandicapInput" class="font-semibold text-rose-400 code-font block">P2 Rock Handicap:</label>
+                        <input id="p2HandicapInput" type="number" min="0" value="0" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-1.5 text-white font-bold code-font focus:outline-none focus:border-rose-500">
+                        <span class="text-[10px] text-gray-500 block">Omit N rocks from P2</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="confirmSetupBtn" class="w-full bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-extrabold py-3 rounded-xl shadow-lg transition tracking-wide text-sm">
+                INITIALIZE BOARD &amp; DRAFT
+            </button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 items-start">
+        <div class="lg:col-span-3 space-y-4">
+            <div class="bg-[#0d1117] border border-gray-800 rounded-xl p-4 shadow-xl">
+                <span class="text-xs uppercase font-semibold text-gray-400 tracking-wider code-font">Current Phase</span>
+                <div id="turnBanner" class="mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-sky-950/40 border-sky-500/40 text-sky-300">
+                    <div class="flex items-center gap-3">
+                        <div id="turnIndicatorBadge" class="w-4 h-4 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.8)]"></div>
+                        <span id="turnText" class="font-bold text-base tracking-wide">PLAYER 1</span>
+                    </div>
+                    <span id="phaseText" class="text-xs code-font bg-black/40 px-2 py-1 rounded border border-white/10 text-amber-400 font-bold">MATCH</span>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-800/80 text-xs space-y-2 text-gray-400">
+                    <div class="flex justify-between">
+                        <span>Grid Radius:</span>
+                        <span id="currentRadiusText" class="code-font text-white font-semibold">R=5</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>P1 Unit Position:</span>
+                        <span id="p1PosText" class="code-font text-white font-semibold">(0, 3)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>P2 Unit Position:</span>
+                        <span id="p2PosText" class="code-font text-white font-semibold">(0, -3)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Active Neutral Rocks:</span>
+                        <span id="rockCountText" class="code-font text-amber-400 font-semibold">16</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="draftStatusPanel" class="hidden bg-sky-950/30 border border-sky-500/40 rounded-xl p-4 space-y-2">
+                <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider code-font flex items-center gap-2">
+                    🎯 Draft Phase Active
+                </h3>
+                <p id="draftInstructions" class="text-xs text-gray-300 leading-relaxed">
+                    Player 1: Click highlit blue perimeter slots to place your rocks.
+                </p>
+                <div class="pt-2 border-t border-sky-900/50 flex justify-between items-center text-xs code-font">
+                    <span class="text-gray-400">Rocks Remaining:</span>
+                    <span id="draftRemainingCount" class="font-extrabold text-amber-400 text-sm">0</span>
+                </div>
+            </div>
+
+            <div class="bg-[#0d1117] border border-gray-800 rounded-xl p-4 space-y-3">
+                <h3 class="text-xs uppercase font-bold text-gray-300 tracking-wider code-font flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Mechanics
+                </h3>
+                <ul class="text-xs text-gray-400 space-y-2 leading-relaxed">
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-400 font-bold">1.</span>
+                        <span><b>Surgical Draft:</b> Handicaps allow picking custom rock locations along the $R-2$ ring.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 font-bold">2.</span>
+                        <span><b>Universal Control:</b> Either player can move ANY rock regardless of cosmetic tint.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold">3.</span>
+                        <span><b>Crunch Win:</b> Trap enemy against a rock or boundary wall.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lg:col-span-6 flex flex-col items-center justify-center relative min-h-[500px]">
+            <div id="victoryOverlay" class="hidden absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center rounded-2xl border border-red-500/50 animate-fade-in">
+                <div class="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
+                    💥
+                </div>
+                <h2 id="victoryTitle" class="text-3xl font-extrabold text-white tracking-wider mb-2">CRUNCH ACHIEVED!</h2>
+                <p id="victoryDesc" class="text-sm text-gray-300 max-w-xs mb-6">Player 1 trapped Player 2 between a rock and a hard place.</p>
+                <button id="playAgainBtn" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-red-950/50 transition">
+                    Start Next Match
+                </button>
+            </div>
+
+            <div class="w-full h-full flex items-center justify-center">
+                <svg id="hexBoard" class="w-full max-w-[560px] h-[520px] drop-shadow-2xl overflow-visible" viewBox="-300 -300 600 600">
+                </svg>
+            </div>
+        </div>
+
+        <div class="lg:col-span-3 space-y-4">
+            <div class="bg-[#0d1117] border border-gray-800 rounded-xl p-4 flex flex-col h-[480px]">
+                <div class="flex items-center justify-between pb-3 border-b border-gray-800 mb-3">
+                    <h3 class="text-xs uppercase font-bold text-gray-300 tracking-wider code-font flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1.207 1.207 0 01.832.345l4.586 4.586a1.207 1.207 0 01.345.832V19a2 2 0 01-2 2z"></path></svg>
+                        Vector Event Log
+                    </h3>
+                    <span id="moveCount" class="text-[10px] code-font bg-gray-800 text-gray-300 px-2 py-0.5 rounded">0 Moves</span>
+                </div>
+
+                <div id="logContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 code-font text-xs">
+                    <div class="text-gray-500 text-center py-8 italic text-[11px]">
+                        Configure board radius &amp; handicaps.
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-800 mt-auto flex justify-between items-center text-[10px] text-gray-500 code-font">
+                    <span>Draft &amp; Move Engine</span>
+                    <button id="undoBtn" class="text-gray-400 hover:text-white transition disabled:opacity-30" disabled>Undo</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-800/60 bg-[#0d1117] py-3 px-4 text-center text-xs text-gray-500 flex flex-wrap justify-between items-center max-w-7xl mx-auto w-full gap-2">
+        <span>Crunch (Rock Chess) Protocol — Draft Phase Specification</span>
+        <span class="code-font text-gray-600">MIT License</span>
+    </footer>
+
+    <script>
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playTone(freq, duration, type = 'sine', volume = 0.1) {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            step() { this.playTone(440, 0.1, 'sine', 0.08); }
+            push() { 
+                this.playTone(180, 0.2, 'triangle', 0.2); 
+                setTimeout(() => this.playTone(140, 0.25, 'sawtooth', 0.15), 60);
+            }
+            crunch() {
+                this.playTone(100, 0.6, 'sawtooth', 0.4);
+                setTimeout(() => this.playTone(50, 0.8, 'square', 0.5), 100);
+            }
+        }
+
+        const audio = new SoundEngine();
+
+        const HEX_DIRECTIONS = [
+            { q: 1, r: 0 },   
+            { q: 1, r: -1 },  
+            { q: 0, r: -1 },  
+            { q: -1, r: 0 },  
+            { q: -1, r: 1 },  
+            { q: 0, r: 1 }    
+        ];
+
+        function axialDistance(q1, r1, q2 = 0, r2 = 0) {
+            const dq = q1 - q2;
+            const dr = r1 - r2;
+            return (Math.abs(dq) + Math.abs(dr) + Math.abs(dq + dr)) / 2;
+        }
+
+        const state = {
+            radius: 5,
+            p1Handicap: 0,
+            p2Handicap: 0,
+            phase: 'setup',
+            draftState: {
+                player: null,
+                rocksToPlace: 0,
+                availableKeys: []
+            },
+            grid: new Map(),
+            turn: 'P1',
+            selectedUnit: null,
+            validActions: [],
+            moveHistory: [],
+            winner: null
+        };
+
+        const hexBoard = document.getElementById('hexBoard');
+        const setupModal = document.getElementById('setupModal');
+        const modalRadiusInput = document.getElementById('modalRadiusInput');
+        const p1HandicapInput = document.getElementById('p1HandicapInput');
+        const p2HandicapInput = document.getElementById('p2HandicapInput');
+        const bufferRingCount = document.getElementById('bufferRingCount');
+        const defaultSideRocksCount = document.getElementById('defaultSideRocksCount');
+        const maxHandicapDisplay = document.getElementById('maxHandicapDisplay');
+        const activeTotalRocks = document.getElementById('activeTotalRocks');
+        const confirmSetupBtn = document.getElementById('confirmSetupBtn');
+        const reconfigureBtn = document.getElementById('reconfigureBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const soundToggle = document.getElementById('soundToggle');
+        const turnText = document.getElementById('turnText');
+        const turnBanner = document.getElementById('turnBanner');
+        const turnIndicatorBadge = document.getElementById('turnIndicatorBadge');
+        const phaseText = document.getElementById('phaseText');
+        const draftStatusPanel = document.getElementById('draftStatusPanel');
+        const draftInstructions = document.getElementById('draftInstructions');
+        const draftRemainingCount = document.getElementById('draftRemainingCount');
+        const currentRadiusText = document.getElementById('currentRadiusText');
+        const p1PosText = document.getElementById('p1PosText');
+        const p2PosText = document.getElementById('p2PosText');
+        const rockCountText = document.getElementById('rockCountText');
+        const logContainer = document.getElementById('logContainer');
+        const moveCount = document.getElementById('moveCount');
+        const victoryOverlay = document.getElementById('victoryOverlay');
+        const victoryTitle = document.getElementById('victoryTitle');
+        const victoryDesc = document.getElementById('victoryDesc');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const undoBtn = document.getElementById('undoBtn');
+
+        function updateModalStats() {
+            let r = parseInt(modalRadiusInput.value, 10);
+            if (isNaN(r) || r < 4) r = 4;
+
+            const bufferCount = 6 * (r - 1);
+            const ringSlots = 6 * (r - 2) - 2;
+            const defaultSide = Math.floor(ringSlots / 2);
+            const maxHandicap = Math.floor(defaultSide / 2);
+
+            p1HandicapInput.max = maxHandicap;
+            p2HandicapInput.max = maxHandicap;
+
+            let h1 = parseInt(p1HandicapInput.value, 10) || 0;
+            let h2 = parseInt(p2HandicapInput.value, 10) || 0;
+
+            if (h1 > maxHandicap) { h1 = maxHandicap; p1HandicapInput.value = h1; }
+            if (h2 > maxHandicap) { h2 = maxHandicap; p2HandicapInput.value = h2; }
+
+            const activeRocks = (defaultSide - h1) + (defaultSide - h2);
+
+            bufferRingCount.textContent = bufferCount;
+            defaultSideRocksCount.textContent = `${defaultSide} / side`;
+            maxHandicapDisplay.textContent = `${maxHandicap} Rocks`;
+            activeTotalRocks.textContent = `${activeRocks} Rocks`;
+        }
+
+        function initGame() {
+            let R = parseInt(modalRadiusInput.value, 10);
+            if (isNaN(R) || R < 4) R = 4;
+
+            state.radius = R;
+            state.p1Handicap = parseInt(p1HandicapInput.value, 10) || 0;
+            state.p2Handicap = parseInt(p2HandicapInput.value, 10) || 0;
+            state.grid.clear();
+            state.turn = 'P1';
+            state.selectedUnit = null;
+            state.validActions = [];
+            state.moveHistory = [];
+            state.winner = null;
+
+            victoryOverlay.classList.add('hidden');
+            setupModal.classList.add('hidden');
+
+            for (let q = -R; q <= R; q++) {
+                const r1 = Math.max(-R, -q - R);
+                const r2 = Math.min(R, -q + R);
+                for (let r = r1; r <= r2; r++) {
+                    const dist = axialDistance(q, r);
+                    const key = `${q},${r}`;
+
+                    if (dist === R) {
+                        state.grid.set(key, { type: 'wall' });
+                    } else {
+                        state.grid.set(key, { type: 'empty' });
+                    }
+                }
+            }
+
+            const rockRingDist = R - 2;
+            const p1Key = `0,${rockRingDist}`;
+            const p2Key = `0,-${rockRingDist}`;
+            state.grid.set(p1Key, { type: 'player', player: 'P1' });
+            state.grid.set(p2Key, { type: 'player', player: 'P2' });
+
+            const p1Available = [];
+            const p2Available = [];
+
+            for (let q = -R; q <= R; q++) {
+                const r1 = Math.max(-R, -q - R);
+                const r2 = Math.min(R, -q + R);
+                for (let r = r1; r <= r2; r++) {
+                    const dist = axialDistance(q, r);
+                    const key = `${q},${r}`;
+
+                    if (dist === rockRingDist && key !== p1Key && key !== p2Key) {
+                        if (r >= 0) p1Available.push(key);
+                        else p2Available.push(key);
+                    }
+                }
+            }
+
+            if (state.p1Handicap > 0) {
+                startDraftPhase('P1', p1Available.length - state.p1Handicap, p1Available, p2Available);
+            } else {
+                p1Available.forEach(key => state.grid.set(key, { type: 'rock', rockOwner: 'P1' }));
+
+                if (state.p2Handicap > 0) {
+                    startDraftPhase('P2', p2Available.length - state.p2Handicap, p2Available, []);
+                } else {
+                    p2Available.forEach(key => state.grid.set(key, { type: 'rock', rockOwner: 'P2' }));
+                    startMatchPhase();
+                }
+            }
+        }
+
+        function startDraftPhase(player, count, availableKeys, nextPlayerAvailable) {
+            state.phase = player === 'P1' ? 'draft_p1' : 'draft_p2';
+            state.draftState = {
+                player: player,
+                rocksToPlace: count,
+                availableKeys: availableKeys,
+                nextKeys: nextPlayerAvailable
+            };
+
+            draftStatusPanel.classList.remove('hidden');
+            phaseText.textContent = "DRAFT";
+            draftInstructions.textContent = `${player === 'P1' ? 'Player 1' : 'Player 2'}: Click highlit perimeter slots to place your ${count} rocks.`;
+            draftRemainingCount.textContent = count;
+
+            updateUI();
+            renderBoard();
+            addLogEntry("Draft Phase", `${player} drafting ${count} rocks on custom perimeter slots.`);
+        }
+
+        function placeDraftRock(key) {
+            const player = state.draftState.player;
+            state.grid.set(key, { type: 'rock', rockOwner: player });
+            state.draftState.rocksToPlace--;
+            
+            state.draftState.availableKeys = state.draftState.availableKeys.filter(k => k !== key);
+            draftRemainingCount.textContent = state.draftState.rocksToPlace;
+
+            audio.step();
+
+            if (state.draftState.rocksToPlace <= 0) {
+                if (player === 'P1' && state.p2Handicap > 0) {
+                    const p2Keys = state.draftState.nextKeys;
+                    startDraftPhase('P2', p2Keys.length - state.p2Handicap, p2Keys, []);
+                } else {
+                    if (player === 'P1' && state.p2Handicap === 0) {
+                        state.draftState.nextKeys.forEach(k => state.grid.set(k, { type: 'rock', rockOwner: 'P2' }));
+                    }
+                    startMatchPhase();
+                }
+            } else {
+                renderBoard();
+            }
+        }
+
+        function startMatchPhase() {
+            state.phase = 'match';
+            state.turn = 'P1';
+            draftStatusPanel.classList.add('hidden');
+            phaseText.textContent = "MATCH";
+
+            updateUI();
+            renderBoard();
+            addLogEntry("Match Started", "Draft complete. Turn 1 P1 active.");
+        }
+
+        function calculateValidActions(player) {
+            state.validActions = [];
+            
+            let pCoord = null;
+            for (let [key, cell] of state.grid.entries()) {
+                if (cell.type === 'player' && cell.player === player) {
+                    const [q, r] = key.split(',').map(Number);
+                    pCoord = { q, r };
+                    break;
+                }
+            }
+
+            if (!pCoord) return;
+
+            HEX_DIRECTIONS.forEach(dir => {
+                const rockPos = { q: pCoord.q + dir.q, r: pCoord.r + dir.r };
+                const rockKey = `${rockPos.q},${rockPos.r}`;
+                const rockCell = state.grid.get(rockKey);
+
+                if (!rockCell) return;
+
+                if (rockCell.type === 'empty') {
+                    state.validActions.push({
+                        type: 'move',
+                        target: rockPos
+                    });
+                }
+
+                if (rockCell.type === 'rock') {
+                    const destPos = { q: rockPos.q + dir.q, r: rockPos.r + dir.r };
+                    const destKey = `${destPos.q},${destPos.r}`;
+                    const destCell = state.grid.get(destKey);
+
+                    if (!destCell) return;
+                    if (destCell.type === 'wall' || destCell.type === 'rock') return;
+
+                    if (destCell.type === 'empty') {
+                        state.validActions.push({
+                            type: 'push',
+                            target: destPos,
+                            playerFrom: pCoord,
+                            playerTo: rockPos,
+                            rockFrom: rockPos,
+                            rockTo: destPos,
+                            isCrunch: false
+                        });
+                    }
+
+                    if (destCell.type === 'player' && destCell.player !== player) {
+                        const enemyBehindPos = { q: destPos.q + dir.q, r: destPos.r + dir.r };
+                        const enemyBehindKey = `${enemyBehindPos.q},${enemyBehindPos.r}`;
+                        const enemyBehindCell = state.grid.get(enemyBehindKey);
+
+                        if (enemyBehindCell) {
+                            if (enemyBehindCell.type === 'empty') {
+                                state.validActions.push({
+                                    type: 'push',
+                                    target: destPos,
+                                    playerFrom: pCoord,
+                                    playerTo: rockPos,
+                                    rockFrom: rockPos,
+                                    rockTo: destPos,
+                                    shoveEnemy: enemyBehindPos,
+                                    isCrunch: false
+                                });
+                            } else if (enemyBehindCell.type === 'wall' || enemyBehindCell.type === 'rock') {
+                                state.validActions.push({
+                                    type: 'push',
+                                    target: destPos,
+                                    playerFrom: pCoord,
+                                    playerTo: rockPos,
+                                    rockFrom: rockPos,
+                                    rockTo: destPos,
+                                    shoveEnemy: enemyBehindPos,
+                                    isCrunch: true
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function executeAction(action) {
+            if (state.winner || state.phase !== 'match') return;
+
+            const player = state.turn;
+            let pKey = '';
+
+            for (let [key, cell] of state.grid.entries()) {
+                if (cell.type === 'player' && cell.player === player) {
+                    pKey = key;
+                    break;
+                }
+            }
+
+            saveHistory();
+
+            if (action.type === 'move') {
+                state.grid.set(pKey, { type: 'empty' });
+                const newKey = `${action.target.q},${action.target.r}`;
+                state.grid.set(newKey, { type: 'player', player: player });
+
+                audio.step();
+                addLogEntry(player, `Stepped to (${action.target.q}, ${action.target.r})`);
+            } else if (action.type === 'push') {
+                const pFromKey = `${action.playerFrom.q},${action.playerFrom.r}`;
+                const pToKey = `${action.playerTo.q},${action.playerTo.r}`;
+                const rFromKey = `${action.rockFrom.q},${action.rockFrom.r}`;
+                const rToKey = `${action.rockTo.q},${action.rockTo.r}`;
+
+                const rockObj = state.grid.get(rFromKey);
+                const playerObj = state.grid.get(pFromKey);
+
+                if (action.isCrunch) {
+                    audio.crunch();
+                    state.winner = player;
+                    addLogEntry(player, `💥 CRUNCH EXECUTED at (${action.rockTo.q}, ${action.rockTo.r})!`, 'text-red-400 font-bold');
+                    showVictoryModal(player, `Trapped opponent against ${state.grid.get(`${action.shoveEnemy.q},${action.shoveEnemy.r}`).type === 'wall' ? 'Boundary Wall' : 'Static Rock'}!`);
+                } else if (action.shoveEnemy) {
+                    const enemyBehindKey = `${action.shoveEnemy.q},${action.shoveEnemy.r}`;
+                    const enemyObj = state.grid.get(rToKey);
+
+                    state.grid.set(enemyBehindKey, enemyObj);
+                    state.grid.set(rToKey, rockObj);
+                    state.grid.set(pToKey, playerObj);
+                    state.grid.set(pFromKey, { type: 'empty' });
+
+                    audio.push();
+                    addLogEntry(player, `Pushed Rock & Followed Through to (${action.playerTo.q}, ${action.playerTo.r})`, 'text-amber-400');
+                } else {
+                    state.grid.set(pFromKey, { type: 'empty' });
+                    state.grid.set(rToKey, rockObj);
+                    state.grid.set(pToKey, playerObj);
+
+                    audio.push();
+                    addLogEntry(player, `Pushed Rock & Followed Through to (${action.playerTo.q}, ${action.playerTo.r})`);
+                }
+            }
+
+            if (!state.winner) {
+                state.turn = state.turn === 'P1' ? 'P2' : 'P1';
+                state.selectedUnit = null;
+                state.validActions = [];
+            }
+
+            updateUI();
+            renderBoard();
+        }
+
+        function renderBoard() {
+            hexBoard.innerHTML = '';
+            const hexSize = Math.min(260 / (state.radius * 2), 32);
+
+            function hexToPixel(q, r) {
+                const x = hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
+                const y = hexSize * (3 / 2 * r);
+                return { x, y };
+            }
+
+            function getHexPoints(cx, cy, size) {
+                const points = [];
+                for (let i = 0; i < 6; i++) {
+                    const angle_rad = Math.PI / 180 * (60 * i - 30);
+                    points.push(`${cx + size * Math.cos(angle_rad)},${cy + size * Math.sin(angle_rad)}`);
+                }
+                return points.join(' ');
+            }
+
+            for (let [key, cell] of state.grid.entries()) {
+                const [q, r] = key.split(',').map(Number);
+                const { x, y } = hexToPixel(q, r);
+
+                const hexPolygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                hexPolygon.setAttribute('points', getHexPoints(x, y, hexSize - 1.5));
+
+                if (cell.type === 'wall') {
+                    hexPolygon.setAttribute('class', 'hex-wall');
+                } else if (state.phase.startsWith('draft')) {
+                    if (state.draftState.availableKeys.includes(key)) {
+                        hexPolygon.setAttribute('class', 'hex-cell hex-draft-slot');
+                        hexPolygon.addEventListener('click', () => placeDraftRock(key));
+                    } else {
+                        hexPolygon.setAttribute('class', 'hex-empty');
+                    }
+                } else {
+                    const action = state.validActions.find(a => 
+                        a.target.q === q && a.target.r === r || 
+                        (a.rockFrom && a.rockFrom.q === q && a.rockFrom.r === r)
+                    );
+
+                    if (action) {
+                        if (action.isCrunch) {
+                            hexPolygon.setAttribute('class', 'hex-cell hex-crunch-vector');
+                        } else if (action.type === 'push') {
+                            hexPolygon.setAttribute('class', 'hex-cell hex-valid-push');
+                        } else {
+                            hexPolygon.setAttribute('class', 'hex-cell hex-valid-move');
+                        }
+
+                        hexPolygon.addEventListener('click', () => executeAction(action));
+                    } else {
+                        hexPolygon.setAttribute('class', 'hex-cell hex-empty');
+                        hexPolygon.addEventListener('click', () => {
+                            if (cell.type === 'player' && cell.player === state.turn) {
+                                state.selectedUnit = { q, r };
+                                calculateValidActions(state.turn);
+                                renderBoard();
+                            } else {
+                                state.selectedUnit = null;
+                                state.validActions = [];
+                                renderBoard();
+                            }
+                        });
+                    }
+                }
+
+                hexBoard.appendChild(hexPolygon);
+            }
+
+            if (state.phase === 'match') {
+                state.validActions.filter(a => a.type === 'push').forEach(action => {
+                    const pPx = hexToPixel(action.playerFrom.q, action.playerFrom.r);
+                    const rToPx = hexToPixel(action.rockTo.q, action.rockTo.r);
+
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', pPx.x);
+                    line.setAttribute('y1', pPx.y);
+                    line.setAttribute('x2', rToPx.x);
+                    line.setAttribute('y2', rToPx.y);
+                    line.setAttribute('stroke', action.isCrunch ? '#f85149' : '#d29922');
+                    line.setAttribute('stroke-width', '3.5');
+                    line.setAttribute('stroke-dasharray', '5 3');
+                    line.setAttribute('class', 'pointer-events-none');
+                    hexBoard.appendChild(line);
+                });
+            }
+
+            for (let [key, cell] of state.grid.entries()) {
+                const [q, r] = key.split(',').map(Number);
+                const { x, y } = hexToPixel(q, r);
+
+                if (cell.type === 'player') {
+                    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    group.setAttribute('class', 'piece-transition cursor-pointer');
+                    
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x);
+                    circle.setAttribute('cy', y);
+                    circle.setAttribute('r', hexSize * 0.55);
+
+                    if (cell.player === 'P1') {
+                        circle.setAttribute('fill', '#0284c7');
+                        circle.setAttribute('stroke', '#38bdf8');
+                        circle.setAttribute('stroke-width', '3');
+                        circle.setAttribute('filter', 'drop-shadow(0 0 8px rgba(56,189,248,0.6))');
+                    } else {
+                        circle.setAttribute('fill', '#9f1239');
+                        circle.setAttribute('stroke', '#f43f5e');
+                        circle.setAttribute('stroke-width', '3');
+                        circle.setAttribute('filter', 'drop-shadow(0 0 8px rgba(244,63,94,0.6))');
+                    }
+
+                    if (state.selectedUnit && state.selectedUnit.q === q && state.selectedUnit.r === r) {
+                        const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        ring.setAttribute('cx', x);
+                        ring.setAttribute('cy', y);
+                        ring.setAttribute('r', hexSize * 0.75);
+                        ring.setAttribute('fill', 'none');
+                        ring.setAttribute('stroke', '#ffffff');
+                        ring.setAttribute('stroke-width', '2');
+                        ring.setAttribute('stroke-dasharray', '3 3');
+                        group.appendChild(ring);
+                    }
+
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', x);
+                    text.setAttribute('y', y + 4);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('fill', '#ffffff');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('font-size', '12px');
+                    text.setAttribute('class', 'code-font pointer-events-none');
+                    text.textContent = cell.player;
+
+                    group.appendChild(circle);
+                    group.appendChild(text);
+
+                    if (state.phase === 'match') {
+                        group.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (cell.player === state.turn) {
+                                state.selectedUnit = { q, r };
+                                calculateValidActions(state.turn);
+                                renderBoard();
+                            }
+                        });
+                    }
+
+                    hexBoard.appendChild(group);
+                } else if (cell.type === 'rock') {
+                    const rockGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    rockGroup.setAttribute('class', 'cursor-pointer');
+
+                    const rockSize = hexSize * 0.5;
+                    const points = [
+                        `${x},${y - rockSize}`,
+                        `${x + rockSize * 0.8},${y - rockSize * 0.3}`,
+                        `${x + rockSize * 0.6},${y + rockSize * 0.7}`,
+                        `${x - rockSize * 0.6},${y + rockSize * 0.7}`,
+                        `${x - rockSize * 0.8},${y - rockSize * 0.3}`
+                    ].join(' ');
+
+                    const rockPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    rockPoly.setAttribute('points', points);
+                    
+                    if (cell.rockOwner === 'P1') {
+                        rockPoly.setAttribute('fill', '#1e293b');
+                        rockPoly.setAttribute('stroke', '#0284c7');
+                    } else {
+                        rockPoly.setAttribute('fill', '#27151c');
+                        rockPoly.setAttribute('stroke', '#be123c');
+                    }
+                    
+                    rockPoly.setAttribute('stroke-width', '2');
+                    rockPoly.setAttribute('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))');
+
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', x);
+                    text.setAttribute('y', y + 3);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('fill', '#94a3b8');
+                    text.setAttribute('font-size', '9px');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('class', 'code-font pointer-events-none');
+                    text.textContent = 'R';
+
+                    rockGroup.appendChild(rockPoly);
+                    rockGroup.appendChild(text);
+
+                    hexBoard.appendChild(rockGroup);
+                }
+            }
+        }
+
+        function updateUI() {
+            if (state.phase.startsWith('draft')) {
+                const draftPlayer = state.draftState.player;
+                if (draftPlayer === 'P1') {
+                    turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-sky-950/40 border-sky-500/40 text-sky-300';
+                    turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.8)]';
+                    turnText.textContent = 'P1 DRAFTING';
+                } else {
+                    turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-rose-950/40 border-rose-500/40 text-rose-300';
+                    turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]';
+                    turnText.textContent = 'P2 DRAFTING';
+                }
+            } else if (state.turn === 'P1') {
+                turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-sky-950/40 border-sky-500/40 text-sky-300';
+                turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.8)]';
+                turnText.textContent = 'PLAYER 1 (Blue)';
+            } else {
+                turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-rose-950/40 border-rose-500/40 text-rose-300';
+                turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]';
+                turnText.textContent = 'PLAYER 2 (Crimson)';
+            }
+
+            let p1Key = 'N/A', p2Key = 'N/A';
+            let rockCount = 0;
+
+            for (let [key, cell] of state.grid.entries()) {
+                if (cell.type === 'player') {
+                    if (cell.player === 'P1') p1Key = key;
+                    if (cell.player === 'P2') p2Key = key;
+                } else if (cell.type === 'rock') {
+                    rockCount++;
+                }
+            }
+
+            currentRadiusText.textContent = `R=${state.radius}`;
+            p1PosText.textContent = `(${p1Key})`;
+            p2PosText.textContent = `(${p2Key})`;
+            rockCountText.textContent = rockCount;
+
+            undoBtn.disabled = state.moveHistory.length === 0 || state.phase !== 'match';
+        }
+
+        function addLogEntry(player, actionText, textClass = 'text-gray-300') {
+            const entry = document.createElement('div');
+            entry.className = 'p-2 rounded bg-gray-900/80 border border-gray-800 flex justify-between items-center text-[11px] animate-fade-in';
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            entry.innerHTML = `
+                <div>
+                    <span class="font-bold ${player === 'P1' ? 'text-sky-400' : player === 'P2' ? 'text-rose-400' : 'text-amber-400'}">[${player}]</span>
+                    <span class="${textClass}">${actionText}</span>
+                </div>
+                <span class="text-[9px] text-gray-600">${timeStr}</span>
+            `;
+
+            logContainer.prepend(entry);
+            moveCount.textContent = `${state.moveHistory.length} Moves`;
+        }
+
+        function showVictoryModal(winner, detail) {
+            victoryTitle.textContent = `${winner === 'P1' ? 'PLAYER 1' : 'PLAYER 2'} WINS!`;
+            victoryDesc.textContent = detail;
+            victoryOverlay.classList.remove('hidden');
+        }
+
+        function saveHistory() {
+            const gridCopy = new Map();
+            for (let [k, v] of state.grid.entries()) {
+                gridCopy.set(k, { ...v });
+            }
+            state.moveHistory.push({
+                grid: gridCopy,
+                turn: state.turn,
+                winner: state.winner
+            });
+        }
+
+        function undo() {
+            if (state.moveHistory.length === 0 || state.phase !== 'match') return;
+            const lastState = state.moveHistory.pop();
+            state.grid = lastState.grid;
+            state.turn = lastState.turn;
+            state.winner = lastState.winner;
+            state.selectedUnit = null;
+            state.validActions = [];
+
+            victoryOverlay.classList.add('hidden');
+            updateUI();
+            renderBoard();
+            addLogEntry('System', 'Undid last turn', 'text-gray-500');
+        }
+
+        modalRadiusInput.addEventListener('input', updateModalStats);
+        p1HandicapInput.addEventListener('input', updateModalStats);
+        p2HandicapInput.addEventListener('input', updateModalStats);
+
+        confirmSetupBtn.addEventListener('click', initGame);
+        reconfigureBtn.addEventListener('click', () => setupModal.classList.remove('hidden'));
+        resetBtn.addEventListener('click', initGame);
+        playAgainBtn.addEventListener('click', () => setupModal.classList.remove('hidden'));
+        undoBtn.addEventListener('click', undo);
+
+        soundToggle.addEventListener('click', () => {
+            audio.init();
+            audio.muted = !audio.muted;
+            soundToggle.textContent = audio.muted ? '🔇' : '🔊';
+        });
+
+        document.addEventListener('click', () => audio.init(), { once: true });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'z' && (e.ctrlKey || e.metaKey)) undo();
+        });
+
+        window.onload = () => {
+            updateModalStats();
+        };
+    </script>
+</body>
+</html>
