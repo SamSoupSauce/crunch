@@ -1,48 +1,43 @@
-# 💥 CRUNCH (Rock Chess) — Open Protocol Specification
+# Crunch
 
-An open-source, zero-sum tactical board game built around physical force limits, 3-axis spatial control, and psychological deception.
+## Preview
 
-Playable in any modern web browser or on a physical hex grid with stones and paper.
+![screen.jpg](screen.jpg)
 
----
+## Summary
 
-## 📜 Protocol Rules & Axioms
+Crunch is a game of long-form strategy and deception. It was created by a bored college student on a paper plate using a pen to draw grid lines and rocks as... Well... rocks. The concept revolves around trapping the enemy player between `A Rock And A Hard Place` in order to achieve, "Crunch", which wins the game. The limited player movement and long term consequences of doing nothing are in the works.
 
-1. **3-Axis Hex Matrix:** Played on a hexagonal grid with 6 cardinal directions (60° vectors).
-2. **Universal Rock Ownership:** Rock colors are purely cosmetic/psychological. **Either player can push ANY rock on the board.**
-3. **Physical Force Limit (1 Unit = 1 Rock):** A player unit can only push a single rock. Immovable multi-rock lines act as static barriers.
-4. **Follow-Through Movement:** Pushing a rock advances **both** the rock and your player unit 1 hex forward along the chosen vector.
-5. **The Crunch Victory Condition:** Pushing a rock directly into an enemy unit who has a boundary wall or static rock behind them traps them instantly → **CRUNCH ACHIEVED**.
+## Live Demo
 
----
+[GitHub Pages](https://samsoupsauce.github.io/crunch/)
 
-## ⚙️ Engine Features
+## Software Stack
 
-- **Infinite Board Radius Scaling (R):** Type any radius size to generate dynamic hex grids.
-- **Outer Buffer Corridor (R-1):** Guarantees proper clearance for pushing rocks outward from the starting perimeter ring (R-2).
-- **Surgical Handicap Draft Phase:** Players taking a rock handicap enter a manual draft mode to custom-position their reduced rock pool along the perimeter.
-- **Zero Dependencies:** Pure HTML5, SVG, Tailwind CSS (CDN), and Web Audio API synthesizer. Single-file architecture.
+- Three.js
 
----
+## Rules
 
-## ⛓️ On-Chain Protocol & Vector NFTs
+**Board**
 
-Because Crunch is completely deterministic and zero-sum, every match can be represented as an immutable, reproducible sequence of state transformations.
+The board is hexagonal with a side length of 5 and 61 spaces.
 
-### 1. Deterministic Seeding & Replays
-A full match history can be encoded into a compact byte payload:
-`[Radius R] + [P1/P2 Handicaps] + [Draft Coordinates] + [Move Vector String]`
+**Turn Order**
 
-Any engine adhering to the Crunch Open Protocol can ingest this payload and replay the entire match step-by-step with 100% fidelity.
+* Blue always goes first.
+* Each player gets one move per turn.
+* Play continues until a mover is crushed or a player surrenders.
 
-### 2. Animated SVG NFTs
-By storing the move vector payload on-chain, the entire match can be minted as a dynamic NFT. 
-- **Zero External Dependencies:** The NFT metadata directly generates a self-contained, looping SVG animation.
-- **Visual Replay:** The rendered SVG plays back the complete match vector-by-vector, displaying the opening draft, long-range positioning, and the final lethal Crunch collision.
-- **Permanent Record:** A match isn't just recorded in text; its spatial evolution becomes a permanent piece of interactive generative art.
+**Movement Rules**
 
----
+1. The only piece a player controls is their color's mover.
+2. The mover can only move into one legal space at a time.
+3. The mover player can move a rock one space in the same direction of the mover, if there is no rock in said space, and if said space is not a map edge.
+4. A mover ( A ) is declared the winner if A pushes a rock into the opponent mover ( B ) under Hazardous Conditions.
+5. A rock can be moved by either mover.
+6. Movers can push each other, if there is not a rock behind them.
 
-## 📄 License
+**Hazardous Conditions**
 
-Licensed under the permissive **MIT License**. Feel free to fork, hack, host, manufacture physical sets, or deploy on-chain smart contracts.
+Mover A's rock will enter mover B's space and the space past mover B in the direction mover A's rock is a wall or a rock.
+
