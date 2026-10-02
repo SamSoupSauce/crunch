@@ -1,0 +1,63 @@
+steps:
+  # 1. Run Go backend tests
+  - name: 'golang:1.26-alpine'
+    id: 'test-backend'
+    dir: 'server'
+    args: ['go', 'test', '-v', './...']
+
+  # 2. Run client-side session verification tests
+  - name: 'node:20-alpine'
+    id: 'test-frontend-session'
+    args: ['node', 'test_session.js']
+
+  # 3. Build container image for the Go multiplayer server
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    args:
+      - 'build'
+      - '-t'
+      - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server:$COMMIT_SHA'
+      - '-t'
+      - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server:latest'
+      - '-f'
+      - 'server/Dockerfile'
+      - 'server'
+
+  # 4. Push container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server'
+
+  # 5. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-cloud-run'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server:$COMMIT_SHA'
+      - '--region'
+      - '$_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+
+images:
+  - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server:$COMMIT_SHA'
+  - '$_AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$_AR_REPOSITORY/crunch-server:latest'
+
+substitutions:
+  _SERVICE_NAME: 'crunch-server'
+  _REGION: 'us-central1'
+  _AR_LOCATION: 'us-central1'
+  _AR_REPOSITORY: 'crunch'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
