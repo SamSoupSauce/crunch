@@ -5,3 +5,8 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Node & Electron
+node_modules/
+dist/
+*.log

@@ -79,6 +79,9 @@ A player immediately wins by pushing a rock into the enemy mover when the space 
   - Vanilla JavaScript (Zero build step)
   - Tailwind CSS (CDN)
   - Web Audio API (Procedural sound synthesis)
+- **Desktop Application**:
+  - Electron 34 (Frameless / hiddenInset native window styling)
+  - electron-builder (Cross-platform builds for macOS, Windows, Linux)
 - **Backend (`server/`)**:
   - Go (Standard library REST API)
   - In-memory 24-hour TTL room store with automated Janitor cleanup
@@ -103,6 +106,26 @@ cd server
 go run ./cmd/server
 ```
 The server will start at `http://localhost:8080`, automatically serving `index.html` and the REST API.
+
+### 3. Desktop Application (Electron)
+Run the desktop app in development mode:
+```bash
+npm start
+```
+
+Build standalone desktop executables and installers:
+```bash
+# Package unpackaged app folder into dist/
+npm run pack
+
+# Build distributable installers (.dmg, .zip, .exe, AppImage)
+npm run dist
+
+# Target-specific platform builds
+npm run dist:mac
+npm run dist:win
+npm run dist:linux
+```
 
 ### Run Tests
 ```bash

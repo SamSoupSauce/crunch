@@ -1,0 +1,68 @@
+{
+  "name": "crunch-game",
+  "version": "1.6.0",
+  "description": "A game of long-form strategy, 3-axis spatial control, and psychological deception.",
+  "main": "main.js",
+  "author": "Samuel L Meyers <sam@samuel-meyers.com>",
+  "license": "MIT",
+  "homepage": "https://samsoupsauce.github.io/crunch/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SamSoupSauce/crunch.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "node test_session.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.samsoupsauce.crunch",
+    "productName": "Crunch",
+    "copyright": "Copyright © 2026 Samuel L Meyers",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "session.js",
+      "icon.svg",
+      "favicon.ico",
+      "RULES.md",
+      "build/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.board-games",
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Game"
+    }
+  },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
+  }
+}

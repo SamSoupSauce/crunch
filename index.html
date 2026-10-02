@@ -102,9 +102,12 @@
         ::-webkit-scrollbar-track {
             background: #0d1117;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #21262d;
-            border-radius: 3px;
+        body.electron-mac header {
+            padding-left: 80px;
+            -webkit-app-region: drag;
+        }
+        body.electron-mac header * {
+            -webkit-app-region: no-drag;
         }
     </style>
 </head>
@@ -2090,6 +2093,42 @@
                 enterOnlineRoom(code);
             } else {
                 mainMenuModal.classList.remove('hidden');
+            }
+
+            if (window.electronAPI) {
+                document.body.classList.add('electron-app');
+                if (window.electronAPI.platform === 'darwin') {
+                    document.body.classList.add('electron-mac');
+                }
+                window.electronAPI.onMenuAction((action) => {
+                    if (action === 'main-menu') {
+                        if (state.winner) initGame();
+                        mainMenuModal.classList.remove('hidden');
+                    } else if (action === 'new-singleplayer') {
+                        mainMenuModal.classList.add('hidden');
+                        rulesModal.classList.add('hidden');
+                        multiplayerModal.classList.add('hidden');
+                        if (mpState.active) leaveMultiplayerRoom();
+                        initGame();
+                    } else if (action === 'create-room') {
+                        mainMenuModal.classList.add('hidden');
+                        createOnlineRoom();
+                    } else if (action === 'join-room') {
+                        mainMenuModal.classList.add('hidden');
+                        multiplayerModal.classList.remove('hidden');
+                        setTimeout(() => roomCodeInput.focus(), 50);
+                    } else if (action === 'open-rules') {
+                        rulesModal.classList.remove('hidden');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    const target = e.target.closest('a');
+                    if (target && target.href && (target.href.startsWith('http://') || target.href.startsWith('https://'))) {
+                        e.preventDefault();
+                        window.electronAPI.openExternal(target.href);
+                    }
+                });
             }
         };
     </script>
