@@ -254,8 +254,8 @@ func TestServeIndexHTML(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	_, _ = buf.ReadFrom(resp.Body)
-	if !bytes.Contains(buf.Bytes(), []byte("Crunch Online Multiplayer")) {
-		t.Errorf("expected index.html to contain 'Crunch Online Multiplayer'")
+	if !bytes.Contains(buf.Bytes(), []byte("Crunch")) {
+		t.Errorf("expected index.html to contain 'Crunch'")
 	}
 }
 

@@ -1,0 +1,56 @@
+<svg class="w-full h-full drop-shadow-[0_0_25px_rgba(244,63,94,0.6)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="crudeRoughness">
+              <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise"></feTurbulence>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+            </filter>
+            <!-- Blood Drop Gradient -->
+            <linearGradient id="bloodDrip" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f43f5e"></stop>
+              <stop offset="100%" stop-color="#881337"></stop>
+            </linearGradient>
+          </defs>
+
+          <!-- Crude Skull Cranium Outline -->
+          <path d="M 45 95 
+                   C 35 40, 165 40, 155 95 
+                   C 152 118, 142 125, 140 145 
+                   C 138 152, 130 156, 122 156 
+                   L 78 156 
+                   C 70 156, 62 152, 60 145 
+                   C 58 125, 48 118, 45 95 Z" fill="#0d0406" stroke="#f43f5e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#crudeRoughness)"></path>
+
+          <!-- Cracked Cranium Fault Line -->
+          <path d="M 100 48 L 94 65 L 106 82 L 98 100" stroke="#be123c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+
+          <!-- Hollow Asymmetrical Eye Sockets -->
+          <path d="M 64 92 C 60 80, 85 78, 86 92 C 87 106, 68 104, 64 92 Z" fill="#f43f5e"></path>
+          <path d="M 136 92 C 140 80, 115 78, 114 92 C 113 106, 132 104, 136 92 Z" fill="#f43f5e"></path>
+          <!-- Piercing red glints -->
+          <circle cx="76" cy="90" r="3" fill="#ffffff"></circle>
+          <circle cx="124" cy="90" r="3" fill="#ffffff"></circle>
+
+          <!-- Crude Inverted Heart Nasal Cavity -->
+          <path d="M 100 110 L 93 124 C 91 128, 99 130, 100 127 C 101 130, 109 128, 107 124 Z" fill="#f43f5e"></path>
+
+          <!-- Mouth Jaw Line -->
+          <path d="M 64 148 Q 100 144 136 148" stroke="#f43f5e" stroke-width="4" stroke-linecap="round"></path>
+
+          <!-- Incisors / Teeth -->
+          <line x1="86" y1="146" x2="86" y2="154" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></line>
+          <line x1="100" y1="145" x2="100" y2="154" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></line>
+          <line x1="114" y1="146" x2="114" y2="154" stroke="#ffffff" stroke-width="3" stroke-linecap="round"></line>
+
+          <!-- JAGGED VAMPIRE FANGS (Long dripping canines) -->
+          <!-- Left Fang -->
+          <polygon points="72,146 79,146 76,172" fill="#ffffff" stroke="#f43f5e" stroke-width="2"></polygon>
+          <!-- Right Fang -->
+          <polygon points="121,146 128,146 124,172" fill="#ffffff" stroke="#f43f5e" stroke-width="2"></polygon>
+
+          <!-- Dripping Blood from Fangs -->
+          <path d="M 76 172 Q 74 185 76 188 Q 78 185 76 172 Z" fill="url(#bloodDrip)"></path>
+          <circle cx="76" cy="192" r="2.5" fill="#f43f5e"></circle>
+          
+          <path d="M 124 172 Q 122 182 124 185 Q 126 182 124 172 Z" fill="url(#bloodDrip)"></path>
+          <circle cx="124" cy="189" r="2" fill="#f43f5e"></circle>
+        </svg>

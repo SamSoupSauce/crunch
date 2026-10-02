@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crunch (Rock Chess) — Custom Draft Engine</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;600;800&display=swap');
@@ -107,38 +110,42 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <header class="border-b border-gray-800 bg-[#0d1117]/80 backdrop-blur px-4 py-3 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-red-950/50">
-                    C
-                </div>
-                <div>
-                    <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
-                        CRUNCH <span class="text-xs font-normal text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded code-font">v1.6.0-DRAFT</span>
-                    </h1>
-                    <p class="text-xs text-gray-400">Custom Placement Handicap // Universal Control Protocol</p>
-                </div>
-            </div>
-
+    <header class="border-b border-gray-800 bg-[#0d1117]/80 backdrop-blur px-4 py-2.5 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2 flex-wrap">
-                <button id="multiplayerBtn" class="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded transition shadow flex items-center gap-1.5">
-                    🌐 Play Online (24h Room)
+                <!-- External Links: GitHub & Website -->
+                <a href="https://github.com/SamSoupSauce" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white border border-gray-700 hover:border-gray-500 transition text-xs font-semibold shadow-sm group" title="GitHub Profile">
+                    <svg class="w-3.5 h-3.5 fill-current text-gray-400 group-hover:text-white transition" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://samuel-meyers.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 hover:border-amber-500/60 transition text-xs font-semibold shadow-sm group" title="Personal Website">
+                    <svg class="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    <span>Website</span>
+                </a>
+
+                <div class="h-4 w-px bg-gray-800 mx-1"></div>
+
+                <button id="mainMenuBtn" class="bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg transition border border-gray-700 flex items-center gap-1.5 shadow">
+                    🏠 Menu
                 </button>
 
-                <button id="reconfigureBtn" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs px-3 py-1.5 rounded transition shadow flex items-center gap-1">
-                    ⚙️ Reconfigure Radius &amp; Handicaps
+                <button id="headerRulesBtn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg transition border border-gray-700 flex items-center gap-1">
+                    📖 Rules
                 </button>
 
-                <button id="resetBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-gray-700 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Restart Match
-                </button>
-
-                <button id="soundToggle" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1.5 rounded transition border border-gray-700">
+                <button id="soundToggle" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg transition border border-gray-700">
                     🔊
                 </button>
             </div>
+
+            <!-- Top Right: Crunch logo linking to homepage -->
+            <a href="./" class="flex items-center gap-2 group hover:opacity-90 transition" title="Crunch Homepage">
+                <div class="text-right hidden sm:block">
+                    <div class="font-black text-sm tracking-wider text-white group-hover:text-amber-400 transition leading-tight">CRUNCH</div>
+                    <div class="text-[10px] text-gray-400 leading-tight">v1.6.0</div>
+                </div>
+                <img src="icon.svg" alt="Crunch Logo" class="w-8 h-8 rounded-lg shadow-md shadow-red-950/50 group-hover:scale-105 transition-transform ring-1 ring-amber-400/40">
+            </a>
         </div>
     </header>
 
@@ -153,7 +160,7 @@
             </div>
             <div class="flex items-center gap-2">
                 <button id="mpCopyLinkBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs px-2.5 py-1 rounded border border-gray-700 transition flex items-center gap-1">
-                    📋 Copy Invite Link
+                    📋 Copy Room Code
                 </button>
                 <button id="mpLeaveBtn" class="bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs px-2.5 py-1 rounded border border-rose-500/30 transition">
                     Leave Room
@@ -162,82 +169,226 @@
         </div>
     </div>
 
-    <div id="setupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-[#0d1117] border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
-            <div class="text-center space-y-1.5">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center font-bold text-black text-2xl mx-auto shadow-lg shadow-red-950/50">
-                    C
-                </div>
-                <h2 class="text-xl font-extrabold text-white tracking-wide">Configure Crunch Grid</h2>
-                <p class="text-xs text-gray-400">Set board radius $R$. Taking a handicap triggers a <b>Custom Draft Phase</b> where you manually position your reduced rock pool.</p>
-            </div>
-
-            <div class="space-y-4 bg-gray-900/50 p-4 rounded-xl border border-gray-800 text-xs">
-                <div class="space-y-1">
-                    <label for="modalRadiusInput" class="font-bold text-gray-200 code-font flex justify-between">
-                        <span>Board Radius (R):</span>
-                        <span class="text-amber-400">Min 4</span>
-                    </label>
-                    <input id="modalRadiusInput" type="number" min="4" max="100" value="5" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-2 text-white font-bold code-font focus:outline-none focus:border-amber-500">
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 border-t border-b border-gray-800 py-2.5 code-font">
-                    <div>Buffer Corridor (R-1): <span id="bufferRingCount" class="text-emerald-400 font-bold">24</span></div>
-                    <div>Default Rocks/Side: <span id="defaultSideRocksCount" class="text-sky-400 font-bold">8</span></div>
-                    <div>Max Handicap/Side: <span id="maxHandicapDisplay" class="text-rose-400 font-bold">4 Rocks</span></div>
-                    <div>Total Rocks Active: <span id="activeTotalRocks" class="text-amber-400 font-bold">16</span></div>
+    <!-- Main Menu Modal -->
+    <div id="mainMenuModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0d1117] border border-gray-800 rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden animate-fade-in flex flex-col">
+            <!-- Top 1/5: Navigation with Rules, GitHub, Website, and Crunch Logo in Top Right -->
+            <nav class="bg-[#161b22]/90 border-b border-gray-800 px-5 py-3.5 flex items-center justify-between flex-wrap gap-2 text-xs">
+                <!-- Navigation Items: Rules, GitHub & Website -->
+                <div class="flex items-center gap-2">
+                    <button id="menuInstructionsBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white border border-gray-700 hover:border-gray-500 transition text-xs font-semibold shadow-sm cursor-pointer group" title="Game Rules &amp; Instructions">
+                        <span>📖</span>
+                        <span>Rules</span>
+                    </button>
+                    <a href="https://github.com/SamSoupSauce" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white border border-gray-700 hover:border-gray-500 transition text-xs font-semibold shadow-sm group" title="GitHub Profile">
+                        <svg class="w-3.5 h-3.5 fill-current text-gray-400 group-hover:text-white transition" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://samuel-meyers.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 hover:border-amber-500/60 transition text-xs font-semibold shadow-sm group" title="Personal Website">
+                        <svg class="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        <span>Website</span>
+                    </a>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-1">
-                    <div class="space-y-1">
-                        <label for="p1HandicapInput" class="font-semibold text-sky-400 code-font block">P1 Rock Handicap:</label>
-                        <input id="p1HandicapInput" type="number" min="0" value="0" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-1.5 text-white font-bold code-font focus:outline-none focus:border-sky-500">
-                        <span class="text-[10px] text-gray-500 block">Omit N rocks from P1</span>
+                <!-- Top Right: Crunch Logo linking to Homepage -->
+                <a href="./" class="flex items-center gap-2 group hover:opacity-90 transition" title="Crunch Homepage">
+                    <span class="font-extrabold text-sm tracking-wider text-white group-hover:text-amber-400 transition">CRUNCH</span>
+                    <img src="icon.svg" alt="Crunch Logo" class="w-7 h-7 rounded-lg shadow-md shadow-red-950/50 group-hover:scale-105 transition-transform ring-1 ring-amber-400/40">
+                </a>
+            </nav>
+
+            <!-- Main Menu Content Body -->
+            <div class="p-7 space-y-6">
+                <!-- Game Modes Layout: 6/10 Singleplayer (Left) | 4/10 Double Row (Create / Join Game) (Right) -->
+                <div class="grid grid-cols-10 gap-3.5 h-60">
+                    <!-- Left: Singleplayer (6/10) -->
+                    <button id="menuSingleplayerBtn" class="col-span-6 bg-gradient-to-br from-amber-500 via-amber-500 to-red-600 hover:from-amber-400 hover:via-amber-400 hover:to-red-500 text-black font-black p-6 rounded-2xl shadow-xl shadow-red-950/40 hover:shadow-amber-500/25 transition-all flex flex-col items-center justify-center gap-3 cursor-pointer text-center group">
+                        <span class="text-6xl group-hover:scale-110 transition-transform drop-shadow">⚔️</span>
+                        <div class="flex flex-col items-center">
+                            <span class="text-2xl font-black tracking-wide leading-tight">Singleplayer</span>
+                            <span class="text-xs font-extrabold text-black/75 uppercase tracking-wider mt-0.5">Local Pass &amp; Play</span>
+                        </div>
+                    </button>
+
+                    <!-- Right: Double Row (4/10) -->
+                    <div class="col-span-4 flex flex-col gap-3.5 h-full">
+                        <!-- Top: Create Game -->
+                        <button id="menuCreateGameBtn" class="flex-1 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold p-4 rounded-2xl shadow-lg hover:shadow-sky-500/25 transition-all flex items-center justify-center gap-3 cursor-pointer text-center group">
+                            <span class="text-3xl group-hover:scale-110 transition-transform">🔵</span>
+                            <div class="flex flex-col text-left">
+                                <span class="text-base font-black tracking-wide leading-tight">Create Game</span>
+                                <span class="text-xs text-sky-200/80 font-medium leading-tight">Host 24h Match</span>
+                            </div>
+                        </button>
+
+                        <!-- Bottom: Join Game -->
+                        <button id="menuJoinGameBtn" class="flex-1 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold p-4 rounded-2xl shadow-lg hover:shadow-rose-500/25 transition-all flex items-center justify-center gap-3 cursor-pointer text-center group">
+                            <span class="text-3xl group-hover:scale-110 transition-transform">🚀</span>
+                            <div class="flex flex-col text-left">
+                                <span class="text-base font-black tracking-wide leading-tight">Join Game</span>
+                                <span class="text-xs text-rose-200/80 font-medium leading-tight">Enter Room ID</span>
+                            </div>
+                        </button>
                     </div>
+                </div>
 
-                    <div class="space-y-1">
-                        <label for="p2HandicapInput" class="font-semibold text-rose-400 code-font block">P2 Rock Handicap:</label>
-                        <input id="p2HandicapInput" type="number" min="0" value="0" class="w-full bg-[#161b22] border border-gray-700 rounded px-3 py-1.5 text-white font-bold code-font focus:outline-none focus:border-rose-500">
-                        <span class="text-[10px] text-gray-500 block">Omit N rocks from P2</span>
-                    </div>
+                <!-- Footer / Version info -->
+                <div class="pt-3 border-t border-gray-800/80 flex items-center justify-between text-xs text-gray-500 code-font">
+                    <span>Version 1.6.0</span>
+                    <span class="text-gray-400">2-Player Turn-Based Abstract Strategy</span>
                 </div>
             </div>
-
-            <button id="confirmSetupBtn" class="w-full bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-extrabold py-3 rounded-xl shadow-lg transition tracking-wide text-sm">
-                INITIALIZE BOARD &amp; DRAFT
-            </button>
         </div>
     </div>
+
+    <!-- Rules Modal (displays RULES.md) -->
+    <div id="rulesModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0d1117] border border-gray-800 rounded-2xl max-w-2xl w-full max-h-[85vh] shadow-2xl flex flex-col overflow-hidden animate-fade-in">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-5 border-b border-gray-800 bg-[#161b22]">
+                <div class="flex items-center gap-2.5">
+                    <img src="icon.svg" alt="Crunch Rules" class="w-8 h-8 rounded-lg shadow-sm ring-1 ring-amber-400/40">
+                    <div>
+                        <h2 class="text-base font-extrabold text-white">CRUNCH — Official Rules</h2>
+                        <p class="text-[11px] text-gray-400">Universal Control Protocol &amp; Movement Mechanics</p>
+                    </div>
+                </div>
+                <button id="closeRulesBtn" class="text-gray-400 hover:text-white text-2xl font-bold p-1 leading-none rounded transition cursor-pointer">&times;</button>
+            </div>
+
+            <!-- Modal Body (Scrollable RULES.md content) -->
+            <div class="p-6 overflow-y-auto space-y-5 text-xs text-gray-300 leading-relaxed">
+                <!-- Section 1 -->
+                <div class="space-y-1.5 bg-gray-900/40 p-4 rounded-xl border border-gray-800">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-1.5">
+                        <span>1.</span> Overview &amp; Objective
+                    </h3>
+                    <p>
+                        <strong class="text-white">Crunch</strong> is a two-player, turn-based abstract strategy game played on a hexagonal grid. The core concept revolves around maneuvering and weaponizing neutral obstacles to trap the enemy between <em class="text-amber-300">"A Rock and a Hard Place"</em>.
+                    </p>
+                    <p>
+                        <strong class="text-white">Objective:</strong> Win the game by forcing the opponent's mover into a lethal trap—pushing a rock into them when they cannot retreat—thereby executing a <strong class="text-amber-400">Crunch</strong>, or by forcing the opponent to surrender.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="space-y-2 bg-gray-900/40 p-4 rounded-xl border border-gray-800">
+                    <h3 class="text-sm font-bold text-sky-400 flex items-center gap-1.5">
+                        <span>2.</span> Components &amp; Board Setup
+                    </h3>
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-white text-[11px] uppercase tracking-wide">The Board</h4>
+                        <ul class="list-disc list-inside space-y-0.5 text-gray-300 pl-1">
+                            <li><strong class="text-white">Hexagonal Matrix:</strong> Standard board radius $R = 5$ contains <strong>61 hexagonal spaces</strong>.</li>
+                            <li><strong class="text-white">Six Vectors:</strong> Movement occurs along 6 cardinal axes ($60^\circ$ increments).</li>
+                            <li><strong class="text-white">Outer Edge:</strong> Outer boundary forms a solid wall. Nothing can leave the board.</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-1 pt-1 border-t border-gray-800/80">
+                        <h4 class="font-bold text-white text-[11px] uppercase tracking-wide">Pieces</h4>
+                        <ul class="list-disc list-inside space-y-0.5 text-gray-300 pl-1">
+                            <li><strong class="text-sky-300">Movers:</strong> Player 1 (Blue) and Player 2 (Red).</li>
+                            <li><strong class="text-amber-300">Rocks:</strong> 16 neutral rocks (8 on each side in standard setup).</li>
+                            <li><strong class="text-emerald-400">Universal Ownership:</strong> Rock colors are cosmetic/positional. Once play begins, <strong>either player can push any rock</strong> on the board.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="space-y-1.5 bg-gray-900/40 p-4 rounded-xl border border-gray-800">
+                    <h3 class="text-sm font-bold text-indigo-400 flex items-center gap-1.5">
+                        <span>3.</span> Turn Structure
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-1 text-gray-300 pl-1">
+                        <li><strong class="text-white">First Move:</strong> Blue (Player 1) always takes the first turn.</li>
+                        <li><strong class="text-white">Turn Flow:</strong> Players alternate turns. Exactly <strong>one action</strong> per turn.</li>
+                        <li><strong class="text-white">No Passing:</strong> A player must make a legal move on their turn.</li>
+                        <li><strong class="text-white">Game End:</strong> Play continues until a mover is crushed (<strong>Crunch</strong>) or a player surrenders.</li>
+                    </ol>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="space-y-2 bg-gray-900/40 p-4 rounded-xl border border-gray-800">
+                    <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                        <span>4.</span> Movement Mechanics
+                    </h3>
+                    <p class="text-gray-400">A player controls only their respective mover. Each turn, perform one of three actions:</p>
+                    <div class="space-y-2 pl-1">
+                        <div class="bg-[#161b22] p-2.5 rounded-lg border border-gray-800">
+                            <span class="font-bold text-white">A. Simple Move:</span>
+                            <p class="text-gray-300 mt-0.5">Move one space into any adjacent empty hex.</p>
+                        </div>
+                        <div class="bg-[#161b22] p-2.5 rounded-lg border border-gray-800">
+                            <span class="font-bold text-white">B. Pushing a Rock:</span>
+                            <ul class="list-disc list-inside space-y-0.5 text-gray-300 mt-0.5">
+                                <li>Move into the rock's hex, displacing it <strong>one space forward</strong> in that same direction (follow-through).</li>
+                                <li><strong class="text-amber-300">Single-Piece Force Limit:</strong> Only push <strong>one rock at a time</strong>. Cannot push two rocks in a row.</li>
+                                <li><strong class="text-amber-300">Valid Destination:</strong> Destination hex must be empty. Cannot push rocks off the board or into another rock.</li>
+                                <li><strong class="text-emerald-300">Universal Manipulation:</strong> Any rock can be pushed by either mover.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-[#161b22] p-2.5 rounded-lg border border-gray-800">
+                            <span class="font-bold text-white">C. Pushing the Opposing Mover:</span>
+                            <p class="text-gray-300 mt-0.5">A mover can push the opposing mover if the space directly behind them is an empty hex. Both movers advance one space.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="space-y-2 bg-red-950/20 p-4 rounded-xl border border-red-500/30">
+                    <h3 class="text-sm font-bold text-rose-400 flex items-center gap-1.5">
+                        <span>5.</span> Hazardous Conditions &amp; Winning (The "Crunch")
+                    </h3>
+                    <p>
+                        A player achieves <strong class="text-amber-400">Crunch</strong> and immediately wins the match when pushing a rock into the opposing mover under <strong class="text-rose-400">Hazardous Conditions</strong>.
+                    </p>
+                    <div class="bg-[#161b22]/90 p-3 rounded-lg border border-red-500/30 space-y-1">
+                        <div class="font-bold text-red-200">Hazardous Conditions occur when:</div>
+                        <ol class="list-decimal list-inside space-y-0.5 text-gray-300">
+                            <li>Mover A pushes a rock into Mover B's current hex, <strong>AND</strong></li>
+                            <li>The space directly behind Mover B is blocked by either a <strong class="text-amber-300">wall</strong> (outer board boundary) or another <strong class="text-amber-300">rock</strong>.</li>
+                        </ol>
+                    </div>
+                    <p class="text-xs text-rose-300 font-semibold">
+                        When both conditions are met, Mover B is crushed between the incoming rock and a hard place — immediate victory for Mover A!
+                    </p>
+                </div>
+
+                <!-- Section 6 -->
+                <div class="space-y-1.5 bg-gray-900/40 p-4 rounded-xl border border-gray-800">
+                    <h3 class="text-sm font-bold text-gray-300 flex items-center gap-1.5">
+                        <span>6.</span> End of Game
+                    </h3>
+                    <ul class="list-disc list-inside space-y-1 text-gray-300 pl-1">
+                        <li><strong class="text-white">Crunch Achieved:</strong> A player crushes the opponent under Hazardous Conditions.</li>
+                        <li><strong class="text-white">Surrender:</strong> A player chooses to resign at any point during their turn.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-gray-800 bg-[#161b22] flex justify-end">
+                <button id="backToMenuFromRulesBtn" class="bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-extrabold px-5 py-2 rounded-xl text-xs shadow transition cursor-pointer">
+                    Close Rules
+                </button>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- Multiplayer Modal -->
     <div id="multiplayerModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-[#0d1117] border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
             <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-950/50">
-                        🌐
-                    </div>
+                <div class="flex items-center gap-2.5">
+                    <img src="icon.svg" alt="Crunch Multiplayer" class="w-9 h-9 rounded-xl shadow-lg shadow-rose-950/50 ring-1 ring-rose-500/40">
                     <div>
-                        <h2 class="text-base font-extrabold text-white">Crunch Online Multiplayer</h2>
-                        <p class="text-[11px] text-gray-400">2-Player Rooms (24h Expiry) • Zero Config</p>
+                        <h2 class="text-base font-extrabold text-white">Join Online Game</h2>
+                        <p class="text-[11px] text-gray-400">Enter a 24h Crunch match Room ID to play</p>
                     </div>
                 </div>
                 <button id="closeMpModalBtn" class="text-gray-400 hover:text-white text-xl font-bold px-2 py-0.5 rounded transition">&times;</button>
-            </div>
-
-            <!-- Host Room Section -->
-            <div class="space-y-2.5 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
-                <h3 class="text-xs font-bold text-sky-400 code-font uppercase flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-sky-400"></span> Host New Game (24h Room)
-                </h3>
-                <p class="text-xs text-gray-400 leading-relaxed">
-                    Create a 24h room. Host is always Player 1 (goes first).
-                </p>
-                <div>
-                    <button id="createRoomBtn" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold py-2.5 rounded-lg shadow-md transition text-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                        🔵 Host Game (Player 1)
-                    </button>
-                </div>
             </div>
 
             <!-- Join Room Section -->
@@ -303,7 +454,7 @@
             <!-- Server Settings -->
             <div class="text-[11px] text-gray-500 border-t border-gray-800 pt-3 flex items-center justify-between">
                 <span>API Server URL:</span>
-                <input id="apiServerUrlInput" type="text" value="http://localhost:8080" class="bg-[#161b22] border border-gray-800 rounded px-2 py-1 text-gray-300 code-font text-[11px] w-52 text-right focus:outline-none focus:border-gray-600">
+                <input id="apiServerUrlInput" type="text" value="https://crunch-server-827895562255.us-central1.run.app" class="bg-[#161b22] border border-gray-800 rounded px-2 py-1 text-gray-300 code-font text-[11px] w-52 text-right focus:outline-none focus:border-gray-600">
             </div>
         </div>
     </div>
@@ -376,13 +527,11 @@
 
         <div class="lg:col-span-6 flex flex-col items-center justify-center relative min-h-[500px]">
             <div id="victoryOverlay" class="hidden absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center rounded-2xl border border-red-500/50 animate-fade-in">
-                <div class="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
-                    💥
-                </div>
+                <img src="icon.svg" alt="Crunch Achieved" class="w-20 h-20 rounded-2xl mb-4 shadow-[0_0_35px_rgba(244,63,94,0.6)] ring-2 ring-rose-500/50">
                 <h2 id="victoryTitle" class="text-3xl font-extrabold text-white tracking-wider mb-2">CRUNCH ACHIEVED!</h2>
                 <p id="victoryDesc" class="text-sm text-gray-300 max-w-xs mb-6">Player 1 trapped Player 2 between a rock and a hard place.</p>
-                <button id="playAgainBtn" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-red-950/50 transition">
-                    Start Next Match
+                <button id="playAgainBtn" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-red-950/50 transition cursor-pointer">
+                    Return to Main Menu
                 </button>
             </div>
 
@@ -502,6 +651,17 @@
         };
 
         const hexBoard = document.getElementById('hexBoard');
+        const mainMenuModal = document.getElementById('mainMenuModal');
+        const menuInstructionsBtn = document.getElementById('menuInstructionsBtn');
+        const menuSingleplayerBtn = document.getElementById('menuSingleplayerBtn');
+        const menuCreateGameBtn = document.getElementById('menuCreateGameBtn');
+        const menuJoinGameBtn = document.getElementById('menuJoinGameBtn');
+        const rulesModal = document.getElementById('rulesModal');
+        const closeRulesBtn = document.getElementById('closeRulesBtn');
+        const backToMenuFromRulesBtn = document.getElementById('backToMenuFromRulesBtn');
+        const mainMenuBtn = document.getElementById('mainMenuBtn');
+        const headerRulesBtn = document.getElementById('headerRulesBtn');
+        const closeSetupBtn = document.getElementById('closeSetupBtn');
         const setupModal = document.getElementById('setupModal');
         const modalRadiusInput = document.getElementById('modalRadiusInput');
         const p1HandicapInput = document.getElementById('p1HandicapInput');
@@ -571,20 +731,21 @@
             lastMsgId: 0,
             turnPollInterval: null,
             msgPollInterval: null,
-            apiBase: 'http://localhost:8080'
+            apiBase: 'https://crunch-server-827895562255.us-central1.run.app'
         };
 
         function getApiBase() {
             if (apiServerUrlInput && apiServerUrlInput.value) {
                 return apiServerUrlInput.value.trim().replace(/\/+$/, '');
             }
-            if (window.location.protocol.startsWith('http') && (window.location.port === '8080' || window.location.port === '')) {
+            if (window.location.protocol.startsWith('http') && window.location.port === '8080') {
                 return window.location.origin;
             }
-            return 'http://localhost:8080';
+            return 'https://crunch-server-827895562255.us-central1.run.app';
         }
 
         function updateModalStats() {
+            if (!modalRadiusInput) return;
             let r = parseInt(modalRadiusInput.value, 10);
             if (isNaN(r) || r < 4) r = 4;
 
@@ -593,39 +754,44 @@
             const defaultSide = Math.floor(ringSlots / 2);
             const maxHandicap = Math.floor(defaultSide / 2);
 
-            p1HandicapInput.max = maxHandicap;
-            p2HandicapInput.max = maxHandicap;
+            if (p1HandicapInput) p1HandicapInput.max = maxHandicap;
+            if (p2HandicapInput) p2HandicapInput.max = maxHandicap;
 
-            let h1 = parseInt(p1HandicapInput.value, 10) || 0;
-            let h2 = parseInt(p2HandicapInput.value, 10) || 0;
+            let h1 = (p1HandicapInput && parseInt(p1HandicapInput.value, 10)) || 0;
+            let h2 = (p2HandicapInput && parseInt(p2HandicapInput.value, 10)) || 0;
 
-            if (h1 > maxHandicap) { h1 = maxHandicap; p1HandicapInput.value = h1; }
-            if (h2 > maxHandicap) { h2 = maxHandicap; p2HandicapInput.value = h2; }
+            if (p1HandicapInput && h1 > maxHandicap) { h1 = maxHandicap; p1HandicapInput.value = h1; }
+            if (p2HandicapInput && h2 > maxHandicap) { h2 = maxHandicap; p2HandicapInput.value = h2; }
 
             const activeRocks = (defaultSide - h1) + (defaultSide - h2);
 
-            bufferRingCount.textContent = bufferCount;
-            defaultSideRocksCount.textContent = `${defaultSide} / side`;
-            maxHandicapDisplay.textContent = `${maxHandicap} Rocks`;
-            activeTotalRocks.textContent = `${activeRocks} Rocks`;
+            if (bufferRingCount) bufferRingCount.textContent = bufferCount;
+            if (defaultSideRocksCount) defaultSideRocksCount.textContent = `${defaultSide} / side`;
+            if (maxHandicapDisplay) maxHandicapDisplay.textContent = `${maxHandicap} Rocks`;
+            if (activeTotalRocks) activeTotalRocks.textContent = `${activeRocks} Rocks`;
         }
 
         function initGame() {
-            let R = parseInt(modalRadiusInput.value, 10);
-            if (isNaN(R) || R < 4) R = 4;
+            let R = (modalRadiusInput && parseInt(modalRadiusInput.value, 10)) || 5;
+            if (isNaN(R) || R < 4) R = 5;
 
             state.radius = R;
-            state.p1Handicap = parseInt(p1HandicapInput.value, 10) || 0;
-            state.p2Handicap = parseInt(p2HandicapInput.value, 10) || 0;
+            state.p1Handicap = (p1HandicapInput && parseInt(p1HandicapInput.value, 10)) || 0;
+            state.p2Handicap = (p2HandicapInput && parseInt(p2HandicapInput.value, 10)) || 0;
             state.grid.clear();
             state.turn = 'P1';
             state.selectedUnit = null;
             state.validActions = [];
             state.moveHistory = [];
             state.winner = null;
+            state.draftState = null;
+
+            if (draftStatusPanel) draftStatusPanel.classList.add('hidden');
+            if (logContainer) logContainer.innerHTML = '';
+            if (moveCount) moveCount.textContent = '0 Moves';
 
             victoryOverlay.classList.add('hidden');
-            setupModal.classList.add('hidden');
+            if (setupModal) setupModal.classList.add('hidden');
 
             for (let q = -R; q <= R; q++) {
                 const r1 = Math.max(-R, -q - R);
@@ -726,12 +892,15 @@
         function startMatchPhase() {
             state.phase = 'match';
             state.turn = 'P1';
-            draftStatusPanel.classList.add('hidden');
+            if (draftStatusPanel) draftStatusPanel.classList.add('hidden');
             phaseText.textContent = "MATCH";
 
             updateUI();
             renderBoard();
-            addLogEntry("Match Started", "Draft complete. Turn 1 P1 active.");
+            const startMsg = (state.p1Handicap > 0 || state.p2Handicap > 0)
+                ? "Draft complete. Turn 1 P1 active."
+                : "Game started. Turn 1 P1 active.";
+            addLogEntry("Match Started", startMsg);
         }
 
         function calculateValidActions(player) {
@@ -1272,9 +1441,15 @@
         }
 
         async function createOnlineRoom() {
-            createRoomBtn.disabled = true;
-            const origText = createRoomBtn.innerHTML;
-            createRoomBtn.textContent = 'Creating room...';
+            let origText = '';
+            if (createRoomBtn) {
+                createRoomBtn.disabled = true;
+                origText = createRoomBtn.innerHTML;
+                createRoomBtn.textContent = 'Creating room...';
+            }
+            if (menuCreateGameBtn) {
+                menuCreateGameBtn.disabled = true;
+            }
             const apiBase = getApiBase();
             mpState.apiBase = apiBase;
 
@@ -1300,6 +1475,7 @@
                 // Initialize fresh standard game
                 initGame();
 
+                mainMenuModal.classList.add('hidden');
                 multiplayerModal.classList.add('hidden');
                 updateMultiplayerUI();
                 startMultiplayerPolling();
@@ -1307,8 +1483,13 @@
             } catch (err) {
                 alert("Failed to host room: " + err.message);
             } finally {
-                createRoomBtn.disabled = false;
-                createRoomBtn.innerHTML = origText;
+                if (createRoomBtn) {
+                    createRoomBtn.disabled = false;
+                    createRoomBtn.innerHTML = origText;
+                }
+                if (menuCreateGameBtn) {
+                    menuCreateGameBtn.disabled = false;
+                }
             }
         }
 
@@ -1779,19 +1960,91 @@
             renderBoard();
         }
 
-        modalRadiusInput.addEventListener('input', updateModalStats);
-        p1HandicapInput.addEventListener('input', updateModalStats);
-        p2HandicapInput.addEventListener('input', updateModalStats);
+        if (modalRadiusInput) modalRadiusInput.addEventListener('input', updateModalStats);
+        if (p1HandicapInput) p1HandicapInput.addEventListener('input', updateModalStats);
+        if (p2HandicapInput) p2HandicapInput.addEventListener('input', updateModalStats);
 
-        confirmSetupBtn.addEventListener('click', initGame);
-        reconfigureBtn.addEventListener('click', () => setupModal.classList.remove('hidden'));
-        resetBtn.addEventListener('click', initGame);
-        playAgainBtn.addEventListener('click', () => setupModal.classList.remove('hidden'));
+        if (confirmSetupBtn) confirmSetupBtn.addEventListener('click', initGame);
+        if (reconfigureBtn) reconfigureBtn.addEventListener('click', () => {
+            if (setupModal) setupModal.classList.remove('hidden');
+        });
+        if (resetBtn) resetBtn.addEventListener('click', initGame);
+        playAgainBtn.addEventListener('click', () => {
+            victoryOverlay.classList.add('hidden');
+            if (mpState.active) {
+                leaveMultiplayerRoom();
+            }
+            initGame();
+            mainMenuModal.classList.remove('hidden');
+        });
         undoBtn.addEventListener('click', undo);
 
-        multiplayerBtn.addEventListener('click', () => multiplayerModal.classList.remove('hidden'));
-        closeMpModalBtn.addEventListener('click', () => multiplayerModal.classList.add('hidden'));
-        createRoomBtn.addEventListener('click', createOnlineRoom);
+        // Main Menu & Rules listeners
+        menuInstructionsBtn.addEventListener('click', () => {
+            rulesModal.classList.remove('hidden');
+        });
+
+        closeRulesBtn.addEventListener('click', () => {
+            rulesModal.classList.add('hidden');
+        });
+
+        backToMenuFromRulesBtn.addEventListener('click', () => {
+            rulesModal.classList.add('hidden');
+        });
+
+        headerRulesBtn.addEventListener('click', () => {
+            rulesModal.classList.remove('hidden');
+        });
+
+        mainMenuBtn.addEventListener('click', () => {
+            if (state.winner) {
+                victoryOverlay.classList.add('hidden');
+                if (mpState.active) {
+                    leaveMultiplayerRoom();
+                }
+                initGame();
+            }
+            mainMenuModal.classList.remove('hidden');
+        });
+
+        if (closeSetupBtn) {
+            closeSetupBtn.addEventListener('click', () => {
+                if (setupModal) setupModal.classList.add('hidden');
+                if (state.grid.size === 0) {
+                    mainMenuModal.classList.remove('hidden');
+                }
+            });
+        }
+
+        menuSingleplayerBtn.addEventListener('click', () => {
+            mainMenuModal.classList.add('hidden');
+            if (state.grid.size === 0 || state.winner || state.moveHistory.length > 0 || mpState.active) {
+                if (mpState.active) {
+                    leaveMultiplayerRoom();
+                }
+                initGame();
+            }
+        });
+
+        menuCreateGameBtn.addEventListener('click', async () => {
+            mainMenuModal.classList.add('hidden');
+            await createOnlineRoom();
+        });
+
+        menuJoinGameBtn.addEventListener('click', () => {
+            mainMenuModal.classList.add('hidden');
+            multiplayerModal.classList.remove('hidden');
+            setTimeout(() => roomCodeInput.focus(), 50);
+        });
+
+        if (multiplayerBtn) multiplayerBtn.addEventListener('click', () => multiplayerModal.classList.remove('hidden'));
+        closeMpModalBtn.addEventListener('click', () => {
+            multiplayerModal.classList.add('hidden');
+            if (!mpState.active) {
+                mainMenuModal.classList.remove('hidden');
+            }
+        });
+        if (createRoomBtn) createRoomBtn.addEventListener('click', createOnlineRoom);
         enterRoomBtn.addEventListener('click', () => enterOnlineRoom(roomCodeInput.value));
         checkSlotsBtn.addEventListener('click', () => checkRoomSlots(roomCodeInput.value, false));
         roomCodeInput.addEventListener('keydown', (e) => {
@@ -1805,10 +2058,8 @@
         spectateBtn.addEventListener('click', () => joinAsSpectator(roomCodeInput.value));
         mpLeaveBtn.addEventListener('click', leaveMultiplayerRoom);
         mpCopyLinkBtn.addEventListener('click', () => {
-            const shareUrl = window.location.protocol.startsWith('http')
-                ? `${window.location.origin}${window.location.pathname}?room=${mpState.roomId}`
-                : mpState.roomId;
-            navigator.clipboard.writeText(shareUrl).then(() => {
+            const codeToCopy = mpState.roomId || '';
+            navigator.clipboard.writeText(codeToCopy).then(() => {
                 const prev = mpCopyLinkBtn.textContent;
                 mpCopyLinkBtn.textContent = '✅ Copied!';
                 setTimeout(() => { mpCopyLinkBtn.textContent = prev; }, 1500);
@@ -1829,12 +2080,16 @@
 
         window.onload = () => {
             updateModalStats();
+            initGame();
             const urlParams = new URLSearchParams(window.location.search);
             const roomParam = urlParams.get('room');
             if (roomParam) {
+                mainMenuModal.classList.add('hidden');
                 const code = roomParam.trim().toUpperCase();
                 roomCodeInput.value = code;
                 enterOnlineRoom(code);
+            } else {
+                mainMenuModal.classList.remove('hidden');
             }
         };
     </script>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Core Collision Glow -->
+              <radialGradient id="iconCoreGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.6"/>
+                <stop offset="65%" stop-color="#f43f5e" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+              </radialGradient>
+
+              <!-- Left Rock Shading Gradients -->
+              <linearGradient id="iconRockLeftTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#64748b"/>
+                <stop offset="100%" stop-color="#334155"/>
+              </linearGradient>
+              <linearGradient id="iconRockLeftFront" x1="0%" y1="0%" x2="100%" y2="80%">
+                <stop offset="0%" stop-color="#475569"/>
+                <stop offset="100%" stop-color="#1e293b"/>
+              </linearGradient>
+              <linearGradient id="iconRockLeftDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#334155"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+
+              <!-- Right Rock Shading Gradients -->
+              <linearGradient id="iconRockRightTop" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#64748b"/>
+                <stop offset="100%" stop-color="#334155"/>
+              </linearGradient>
+              <linearGradient id="iconRockRightFront" x1="100%" y1="0%" x2="0%" y2="80%">
+                <stop offset="0%" stop-color="#475569"/>
+                <stop offset="100%" stop-color="#1e293b"/>
+              </linearGradient>
+              <linearGradient id="iconRockRightDark" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#334155"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+
+              <!-- Player 1 Blue Gradient -->
+              <linearGradient id="iconBlueMover" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0284c7"/>
+                <stop offset="60%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+
+              <!-- Player 2 Red Gradient -->
+              <linearGradient id="iconRedMover" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f43f5e"/>
+                <stop offset="40%" stop-color="#e11d48"/>
+                <stop offset="100%" stop-color="#be123c"/>
+              </linearGradient>
+
+              <!-- High Contrast Bloom -->
+              <filter id="iconVectorGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4.5" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+              </filter>
+            </defs>
+
+            <!-- GROUP: Scaled and Centered 1:1 Icon Graphics (NO SOLID RECTANGLE) -->
+            <g id="iconEmblem" transform="translate(256, 256) scale(0.68) translate(-640, -376)">
+              
+              <!-- Ambient Hex Lattice Frame -->
+              <g stroke="#334155" stroke-width="3" stroke-linejoin="round" opacity="0.45" fill="none">
+                <polygon points="560,190 600,167 640,190 640,236 600,259 560,236"/>
+                <polygon points="640,190 680,167 720,190 720,236 680,259 640,236"/>
+                <polygon points="480,236 520,213 560,236 560,282 520,305 480,282"/>
+                <polygon points="560,236 600,213 640,236 640,282 600,305 560,282"/>
+                <polygon points="640,236 680,213 720,236 720,282 680,305 640,282"/>
+                <polygon points="720,236 760,213 800,236 800,282 760,305 720,282"/>
+                <polygon points="400,282 440,259 480,282 480,328 440,351 400,328"/>
+                <polygon points="480,282 520,259 560,282 560,328 520,351 480,328"/>
+                <polygon points="720,282 760,259 800,282 800,328 760,351 720,328"/>
+                <polygon points="800,282 840,259 880,282 880,328 840,351 800,328"/>
+                <polygon points="360,351 400,328 440,351 440,397 400,420 360,397"/>
+                <polygon points="400,351 440,328 480,351 480,397 440,420 400,397"/>
+                <polygon points="800,351 840,328 880,351 880,397 840,420 800,397"/>
+                <polygon points="840,351 880,328 920,351 920,397 880,420 840,397"/>
+                <polygon points="400,420 440,397 480,420 480,466 440,489 400,466"/>
+                <polygon points="480,420 520,397 560,420 560,466 520,489 480,466"/>
+                <polygon points="720,420 760,397 800,420 800,466 760,489 720,466"/>
+                <polygon points="800,420 840,397 880,420 880,466 840,489 800,466"/>
+                <polygon points="480,489 520,466 560,489 560,535 520,558 480,535"/>
+                <polygon points="560,489 600,466 640,489 640,535 600,558 560,535"/>
+                <polygon points="640,489 680,466 720,489 720,535 680,558 640,535"/>
+                <polygon points="720,489 760,466 800,489 800,535 760,558 720,535"/>
+              </g>
+
+              <!-- LEFT BOULDER (Pusher) -->
+              <g id="iconLeftRock">
+                <polygon points="350,378 402,284 496,252 590,326 572,420 538,474 416,498 344,438" fill="#0f172a" stroke="#020617" stroke-width="7" stroke-linejoin="round"/>
+                <polygon points="402,284 496,252 546,312 458,322" fill="url(#iconRockLeftTop)"/>
+                <polygon points="350,378 402,284 458,322 396,388" fill="url(#iconRockLeftFront)"/>
+                <polygon points="458,322 546,312 590,326 558,406 480,404" fill="#475569"/>
+                <polygon points="546,312 590,326 574,382 540,366" fill="#334155"/>
+                <polygon points="574,382 572,420 528,426 540,366" fill="#1e293b"/>
+                <polygon points="396,388 480,404 538,474 416,498 344,438 350,378" fill="url(#iconRockLeftDark)"/>
+                <polygon points="458,322 480,404 396,388" fill="#334155"/>
+                <!-- Rock Fractures -->
+                <path d="M 436 340 L 452 368 L 434 394 M 518 290 L 512 344 L 546 376" stroke="#090d16" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+
+              <!-- RIGHT BOULDER (Opposing Wall) -->
+              <g id="iconRightRock">
+                <polygon points="930,378 878,284 784,252 690,326 708,420 742,474 864,498 936,438" fill="#0f172a" stroke="#020617" stroke-width="7" stroke-linejoin="round"/>
+                <polygon points="878,284 784,252 734,312 822,322" fill="url(#iconRockRightTop)"/>
+                <polygon points="930,378 878,284 822,322 884,388" fill="url(#iconRockRightFront)"/>
+                <polygon points="822,322 734,312 690,326 722,406 800,404" fill="#475569"/>
+                <polygon points="734,312 690,326 706,382 740,366" fill="#334155"/>
+                <polygon points="706,382 708,420 752,426 740,366" fill="#1e293b"/>
+                <polygon points="884,388 800,404 742,474 864,498 936,438 930,378" fill="url(#iconRockRightDark)"/>
+                <polygon points="822,322 800,404 884,388" fill="#334155"/>
+                <!-- Rock Fractures -->
+                <path d="M 844 340 L 828 368 L 846 394 M 762 290 L 768 344 L 734 376" stroke="#090d16" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+
+              <!-- Cardinal Vector Pointers -->
+              <g id="iconPointers">
+                <path d="M 276 376 L 368 370 L 368 382 Z" fill="#0284c7" filter="url(#iconVectorGlow)"/>
+                <line x1="250" y1="376" x2="370" y2="376" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M 1004 376 L 912 370 L 912 382 Z" fill="#e11d48" filter="url(#iconVectorGlow)"/>
+                <line x1="1030" y1="376" x2="910" y2="376" stroke="#f43f5e" stroke-width="3.5" stroke-linecap="round"/>
+              </g>
+
+              <!-- KINETIC SHATTER SHARDS -->
+              <g id="iconShards">
+                <!-- Blue Shards (Left Explosion) -->
+                <g filter="url(#iconVectorGlow)">
+                  <polygon points="636,250 638,180 644,248" fill="#38bdf8"/>
+                  <polygon points="620,270 570,195 628,266" fill="#0ea5e9"/>
+                  <polygon points="610,298 526,240 618,305" fill="#38bdf8"/>
+                  <polygon points="602,342 505,322 606,354" fill="#0284c7"/>
+                  <polygon points="602,398 518,416 605,386" fill="#38bdf8"/>
+                  <polygon points="612,444 544,484 622,434" fill="#0ea5e9"/>
+                  <polygon points="624,472 588,542 636,464" fill="#0284c7"/>
+                  <polygon points="638,490 636,564 644,488" fill="#38bdf8"/>
+                  <!-- Shards -->
+                  <polygon points="562,232 546,218 558,212" fill="#38bdf8"/>
+                  <polygon points="536,280 514,272 524,260" fill="#0ea5e9"/>
+                  <polygon points="516,368 494,360 502,352" fill="#38bdf8"/>
+                  <polygon points="550,450 532,458 544,472" fill="#0284c7"/>
+                  <polygon points="590,520 576,536 572,522" fill="#38bdf8"/>
+                </g>
+
+                <!-- Red Shards (Right Explosion) -->
+                <g filter="url(#iconVectorGlow)">
+                  <polygon points="644,248 642,180 646,250" fill="#f43f5e"/>
+                  <polygon points="652,266 710,195 660,270" fill="#fb7185"/>
+                  <polygon points="662,305 754,240 670,298" fill="#e11d48"/>
+                  <polygon points="674,354 775,322 678,342" fill="#f43f5e"/>
+                  <polygon points="675,386 762,416 678,398" fill="#be123c"/>
+                  <polygon points="658,434 736,484 668,444" fill="#fb7185"/>
+                  <polygon points="644,464 692,542 656,472" fill="#e11d48"/>
+                  <polygon points="644,488 644,564 642,490" fill="#f43f5e"/>
+                  <!-- Shards -->
+                  <polygon points="718,232 734,218 722,212" fill="#f43f5e"/>
+                  <polygon points="744,280 766,272 756,260" fill="#fb7185"/>
+                  <polygon points="764,368 786,360 778,352" fill="#f43f5e"/>
+                  <polygon points="730,450 748,458 736,472" fill="#e11d48"/>
+                  <polygon points="690,520 704,536 708,522" fill="#f43f5e"/>
+                </g>
+              </g>
+
+              <!-- THE TRAPPED MOVER (Caught in the Crunch) -->
+              <g id="iconPawn">
+                <circle cx="640" cy="380" r="52" fill="url(#iconCoreGlow)"/>
+
+                <!-- Blue Half -->
+                <path d="M 640 286 &#10;                         C 628 286 618 296 618 308 &#10;                         C 618 318 624 326 632 329 &#10;                         C 624 335 619 346 620 366 &#10;                         C 620 376 616 384 612 392 &#10;                         L 602 422 &#10;                         C 600 428 604 434 610 434 &#10;                         L 640 434 Z" fill="url(#iconBlueMover)" stroke="#0284c7" stroke-width="3" stroke-linejoin="round"/>
+
+                <!-- Red Half -->
+                <path d="M 640 286 &#10;                         C 652 286 662 296 662 308 &#10;                         C 662 318 656 326 648 329 &#10;                         C 656 335 661 346 660 366 &#10;                         C 660 376 664 384 668 392 &#10;                         L 678 422 &#10;                         C 680 428 676 434 670 434 &#10;                         L 640 434 Z" fill="url(#iconRedMover)" stroke="#be123c" stroke-width="3" stroke-linejoin="round"/>
+
+                <!-- High-Voltage Focal Fault Line -->
+                <line x1="640" y1="270" x2="640" y2="444" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" filter="url(#iconVectorGlow)"/>
+                
+                <!-- Accents -->
+                <path d="M 626 332 L 640 334 L 654 332" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+                <path d="M 610 424 L 640 426 L 670 424" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+              </g>
+            </g>
+          </svg>
