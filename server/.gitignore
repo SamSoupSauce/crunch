@@ -1,0 +1,5 @@
+bin/
+/server
+/cmd/server/server
+*.out
+.DS_Store

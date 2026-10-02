@@ -122,6 +122,10 @@
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
+                <button id="multiplayerBtn" class="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded transition shadow flex items-center gap-1.5">
+                    🌐 Play Online (24h Room)
+                </button>
+
                 <button id="reconfigureBtn" class="bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs px-3 py-1.5 rounded transition shadow flex items-center gap-1">
                     ⚙️ Reconfigure Radius &amp; Handicaps
                 </button>
@@ -137,6 +141,26 @@
             </div>
         </div>
     </header>
+
+    <div id="multiplayerBanner" class="hidden bg-sky-950/70 border-b border-sky-500/40 px-4 py-2.5 backdrop-blur text-xs">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-bold text-white uppercase code-font">Online Room:</span>
+                <span id="mpRoomIdDisplay" class="code-font bg-sky-900/60 px-2 py-0.5 rounded text-sky-200 font-bold border border-sky-500/30">ROOM-XXXXXX</span>
+                <span id="mpRoleBadge" class="code-font px-2 py-0.5 rounded text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">Player 1 (Blue)</span>
+                <span id="mpStatusText" class="text-gray-300 italic">Waiting for opponent to join...</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="mpCopyLinkBtn" class="bg-gray-800 hover:bg-gray-700 text-white text-xs px-2.5 py-1 rounded border border-gray-700 transition flex items-center gap-1">
+                    📋 Copy Invite Link
+                </button>
+                <button id="mpLeaveBtn" class="bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs px-2.5 py-1 rounded border border-rose-500/30 transition">
+                    Leave Room
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="setupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-[#0d1117] border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
@@ -182,6 +206,105 @@
             <button id="confirmSetupBtn" class="w-full bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-extrabold py-3 rounded-xl shadow-lg transition tracking-wide text-sm">
                 INITIALIZE BOARD &amp; DRAFT
             </button>
+        </div>
+    </div>
+
+    <!-- Multiplayer Modal -->
+    <div id="multiplayerModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0d1117] border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-950/50">
+                        🌐
+                    </div>
+                    <div>
+                        <h2 class="text-base font-extrabold text-white">Crunch Online Multiplayer</h2>
+                        <p class="text-[11px] text-gray-400">2-Player Rooms (24h Expiry) • Zero Config</p>
+                    </div>
+                </div>
+                <button id="closeMpModalBtn" class="text-gray-400 hover:text-white text-xl font-bold px-2 py-0.5 rounded transition">&times;</button>
+            </div>
+
+            <!-- Host Room Section -->
+            <div class="space-y-2.5 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                <h3 class="text-xs font-bold text-sky-400 code-font uppercase flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-sky-400"></span> Host New Game (24h Room)
+                </h3>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Create a 24h room. Host is always Player 1 (goes first).
+                </p>
+                <div>
+                    <button id="createRoomBtn" class="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold py-2.5 rounded-lg shadow-md transition text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                        🔵 Host Game (Player 1)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Join Room Section -->
+            <div class="space-y-2.5 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                <h3 class="text-xs font-bold text-rose-400 code-font uppercase flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-rose-400"></span> Join Existing Room
+                </h3>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Enter the Room ID to automatically join your open or saved slot, or choose your side manually.
+                </p>
+                <div class="flex gap-2">
+                    <input id="roomCodeInput" type="text" placeholder="e.g. ROOM-7QW4R8" class="flex-1 bg-[#161b22] border border-gray-700 rounded-lg px-3 py-2 text-white font-bold code-font text-xs uppercase tracking-wider focus:outline-none focus:border-rose-500">
+                    <button id="enterRoomBtn" class="bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold px-3.5 py-2 rounded-lg text-xs shadow-md transition flex items-center gap-1 cursor-pointer">
+                        🚀 Join Room
+                    </button>
+                    <button id="checkSlotsBtn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold px-3 py-2 rounded-lg text-xs border border-gray-700 transition cursor-pointer">
+                        Pick Slot
+                    </button>
+                </div>
+
+                <!-- Slot Selection Area -->
+                <div id="slotPickerSection" class="hidden pt-3 border-t border-gray-800 space-y-2.5 animate-fade-in">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-gray-300">Player Slot Selection:</span>
+                        <span id="slotStatusBadge" class="code-font text-[10px] px-2 py-0.5 rounded font-bold"></span>
+                    </div>
+
+                    <!-- No Empty Slots Alert -->
+                    <div id="noEmptySlotsMsg" class="hidden p-3 rounded-lg bg-red-950/50 border border-red-500/50 text-red-300 text-xs flex flex-col gap-2">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-base leading-none">🚫</span>
+                            <div>
+                                <div class="font-bold text-red-200">No empty slots</div>
+                                <div class="text-[11px] text-red-400/90 mt-0.5">All player slots in this room are occupied.</div>
+                            </div>
+                        </div>
+                        <button id="spectateBtn" class="w-full mt-1 bg-gray-800 hover:bg-gray-700 text-amber-300 border border-amber-500/40 font-bold py-1.5 px-3 rounded text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            👁️ Enter as Spectator (Read-Only)
+                        </button>
+                    </div>
+
+                    <!-- Slot Buttons -->
+                    <div id="slotButtonsGroup" class="grid grid-cols-2 gap-2">
+                        <button id="pickSlot1Btn" class="p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16">
+                            <span class="flex items-center gap-1.5 text-sky-400">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> Player 1 (Blue)
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-normal">Goes First</span>
+                            <span id="slot1StateText" class="text-[10px] font-semibold text-emerald-400">Available</span>
+                        </button>
+
+                        <button id="pickSlot2Btn" class="p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16">
+                            <span class="flex items-center gap-1.5 text-rose-400">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Player 2 (Crimson)
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-normal">Goes Second</span>
+                            <span id="slot2StateText" class="text-[10px] font-semibold text-emerald-400">Available</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Settings -->
+            <div class="text-[11px] text-gray-500 border-t border-gray-800 pt-3 flex items-center justify-between">
+                <span>API Server URL:</span>
+                <input id="apiServerUrlInput" type="text" value="http://localhost:8080" class="bg-[#161b22] border border-gray-800 rounded px-2 py-1 text-gray-300 code-font text-[11px] w-52 text-right focus:outline-none focus:border-gray-600">
+            </div>
         </div>
     </div>
 
@@ -285,7 +408,14 @@
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-gray-800 mt-auto flex justify-between items-center text-[10px] text-gray-500 code-font">
+                <div class="pt-2 border-t border-gray-800 space-y-1.5">
+                    <form id="chatForm" class="flex gap-1.5" onsubmit="event.preventDefault(); sendChatMessage();">
+                        <input id="chatInput" type="text" placeholder="Send REST message..." class="bg-gray-900 border border-gray-700 rounded px-2.5 py-1 text-xs text-white code-font flex-1 focus:outline-none focus:border-sky-500">
+                        <button type="submit" id="sendChatBtn" class="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs px-2.5 py-1 rounded transition">Send</button>
+                    </form>
+                </div>
+
+                <div class="pt-2 border-t border-gray-800 mt-auto flex justify-between items-center text-[10px] text-gray-500 code-font">
                     <span>Draft &amp; Move Engine</span>
                     <button id="undoBtn" class="text-gray-400 hover:text-white transition disabled:opacity-30" disabled>Undo</button>
                 </div>
@@ -298,6 +428,7 @@
         <span class="code-font text-gray-600">MIT License</span>
     </footer>
 
+    <script src="session.js"></script>
     <script>
         class SoundEngine {
             constructor() {
@@ -401,6 +532,57 @@
         const victoryDesc = document.getElementById('victoryDesc');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const undoBtn = document.getElementById('undoBtn');
+
+        // Multiplayer DOM elements
+        const multiplayerBtn = document.getElementById('multiplayerBtn');
+        const multiplayerModal = document.getElementById('multiplayerModal');
+        const closeMpModalBtn = document.getElementById('closeMpModalBtn');
+        const createRoomBtn = document.getElementById('createRoomBtn');
+        const enterRoomBtn = document.getElementById('enterRoomBtn');
+        const checkSlotsBtn = document.getElementById('checkSlotsBtn');
+        const slotPickerSection = document.getElementById('slotPickerSection');
+        const slotStatusBadge = document.getElementById('slotStatusBadge');
+        const noEmptySlotsMsg = document.getElementById('noEmptySlotsMsg');
+        const spectateBtn = document.getElementById('spectateBtn');
+        const slotButtonsGroup = document.getElementById('slotButtonsGroup');
+        const pickSlot1Btn = document.getElementById('pickSlot1Btn');
+        const pickSlot2Btn = document.getElementById('pickSlot2Btn');
+        const slot1StateText = document.getElementById('slot1StateText');
+        const slot2StateText = document.getElementById('slot2StateText');
+        const roomCodeInput = document.getElementById('roomCodeInput');
+        const apiServerUrlInput = document.getElementById('apiServerUrlInput');
+        const multiplayerBanner = document.getElementById('multiplayerBanner');
+        const mpRoomIdDisplay = document.getElementById('mpRoomIdDisplay');
+        const mpRoleBadge = document.getElementById('mpRoleBadge');
+        const mpStatusText = document.getElementById('mpStatusText');
+        const mpCopyLinkBtn = document.getElementById('mpCopyLinkBtn');
+        const mpLeaveBtn = document.getElementById('mpLeaveBtn');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+
+        const mpState = {
+            active: false,
+            roomId: null,
+            playerNum: null,   // 1 or 2
+            playerRole: null,  // 'P1' or 'P2'
+            token: null,
+            opponentJoined: false,
+            lastTurnNumber: 0,
+            lastMsgId: 0,
+            turnPollInterval: null,
+            msgPollInterval: null,
+            apiBase: 'http://localhost:8080'
+        };
+
+        function getApiBase() {
+            if (apiServerUrlInput && apiServerUrlInput.value) {
+                return apiServerUrlInput.value.trim().replace(/\/+$/, '');
+            }
+            if (window.location.protocol.startsWith('http') && (window.location.port === '8080' || window.location.port === '')) {
+                return window.location.origin;
+            }
+            return 'http://localhost:8080';
+        }
 
         function updateModalStats() {
             let r = parseInt(modalRadiusInput.value, 10);
@@ -635,8 +817,23 @@
             });
         }
 
-        function executeAction(action) {
+        function executeAction(action, isRemote = false) {
             if (state.winner || state.phase !== 'match') return;
+
+            if (mpState.active && !isRemote) {
+                if (mpState.playerRole === 'spectator') {
+                    addLogEntry('System', 'You are spectating (read-only mode).', 'text-amber-400');
+                    return;
+                }
+                if (!mpState.opponentJoined) {
+                    addLogEntry('System', 'Waiting for opponent to join room...', 'text-amber-400 font-bold');
+                    return;
+                }
+                if (state.turn !== mpState.playerRole) {
+                    addLogEntry('System', `Not your turn! It is ${state.turn}'s turn.`, 'text-rose-400 font-bold');
+                    return;
+                }
+            }
 
             const player = state.turn;
             let pKey = '';
@@ -696,10 +893,17 @@
                 state.turn = state.turn === 'P1' ? 'P2' : 'P1';
                 state.selectedUnit = null;
                 state.validActions = [];
+                if (mpState.active && state.turn === mpState.playerRole) {
+                    calculateValidActions(state.turn);
+                }
             }
 
             updateUI();
             renderBoard();
+
+            if (mpState.active && !isRemote) {
+                sendTurnToServer(action);
+            }
         }
 
         function renderBoard() {
@@ -756,6 +960,10 @@
                     } else {
                         hexPolygon.setAttribute('class', 'hex-cell hex-empty');
                         hexPolygon.addEventListener('click', () => {
+                            if (mpState.active) {
+                                if (!mpState.opponentJoined || state.turn !== mpState.playerRole) return;
+                                if (cell.type === 'player' && cell.player !== mpState.playerRole) return;
+                            }
                             if (cell.type === 'player' && cell.player === state.turn) {
                                 state.selectedUnit = { q, r };
                                 calculateValidActions(state.turn);
@@ -843,6 +1051,10 @@
                     if (state.phase === 'match') {
                         group.addEventListener('click', (e) => {
                             e.stopPropagation();
+                            if (mpState.active) {
+                                if (!mpState.opponentJoined || state.turn !== mpState.playerRole) return;
+                                if (cell.player !== mpState.playerRole) return;
+                            }
                             if (cell.player === state.turn) {
                                 state.selectedUnit = { q, r };
                                 calculateValidActions(state.turn);
@@ -936,7 +1148,33 @@
             p2PosText.textContent = `(${p2Key})`;
             rockCountText.textContent = rockCount;
 
-            undoBtn.disabled = state.moveHistory.length === 0 || state.phase !== 'match';
+            if (mpState.active) {
+                undoBtn.disabled = true;
+                phaseText.textContent = 'ONLINE';
+                if (mpState.playerRole === 'spectator') {
+                    turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-amber-950/40 border-amber-500/40 text-amber-300';
+                    turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-amber-400';
+                    turnText.textContent = `${state.turn === 'P1' ? 'PLAYER 1' : 'PLAYER 2'}'S TURN`;
+                    mpStatusText.textContent = `👀 Spectating - Current turn: ${state.turn === 'P1' ? 'Player 1 (Blue)' : 'Player 2 (Crimson)'}`;
+                } else if (!mpState.opponentJoined) {
+                    turnBanner.className = 'mt-2 p-3 rounded-lg border flex items-center justify-between transition-all bg-sky-950/40 border-sky-500/40 text-sky-300';
+                    turnIndicatorBadge.className = 'w-4 h-4 rounded-full bg-amber-400 animate-pulse';
+                    turnText.textContent = 'WAITING FOR OPPONENT';
+                    mpStatusText.textContent = 'Waiting for opponent to join... Share your Room ID!';
+                } else {
+                    const isMyTurn = state.turn === mpState.playerRole;
+                    if (isMyTurn) {
+                        mpStatusText.textContent = `🟢 It's YOUR turn (${state.turn === 'P1' ? 'Blue' : 'Crimson'})! Click your piece to move.`;
+                        turnText.textContent = `YOUR TURN (${state.turn === 'P1' ? 'Blue' : 'Crimson'})`;
+                    } else {
+                        mpStatusText.textContent = `⏳ Opponent's turn (${state.turn === 'P1' ? 'Blue' : 'Crimson'}) - Waiting for move...`;
+                        turnText.textContent = `OPPONENT'S TURN (${state.turn === 'P1' ? 'Blue' : 'Crimson'})`;
+                    }
+                }
+            } else {
+                phaseText.textContent = state.phase.toUpperCase();
+                undoBtn.disabled = state.moveHistory.length === 0 || state.phase !== 'match';
+            }
         }
 
         function addLogEntry(player, actionText, textClass = 'text-gray-300') {
@@ -957,6 +1195,9 @@
         }
 
         function showVictoryModal(winner, detail) {
+            if (mpState.active && mpState.roomId) {
+                clearSession(mpState.roomId);
+            }
             victoryTitle.textContent = `${winner === 'P1' ? 'PLAYER 1' : 'PLAYER 2'} WINS!`;
             victoryDesc.textContent = detail;
             victoryOverlay.classList.remove('hidden');
@@ -989,6 +1230,555 @@
             addLogEntry('System', 'Undid last turn', 'text-gray-500');
         }
 
+        // --- Multiplayer Module ---
+
+        // Ensure session recovery functions are available
+        if (typeof persistSession === 'undefined') {
+            window.persistSession = function(roomCode, role) {
+                if (!roomCode || !role) return;
+                try { localStorage.setItem(roomCode, JSON.stringify({ roomCode, role })); } catch (e) {}
+            };
+            window.clearSession = function(roomCode) {
+                if (!roomCode) return;
+                try { localStorage.removeItem(roomCode); } catch (e) {}
+            };
+            window.resolvePlayerRole = function(roomCode, currentRoomState) {
+                if (roomCode) {
+                    try {
+                        const raw = localStorage.getItem(roomCode);
+                        if (raw) {
+                            const session = JSON.parse(raw);
+                            if (session && session.role) return session.role;
+                        }
+                    } catch (e) {}
+                }
+                if (!currentRoomState) return 'spectator';
+                let p1Vacant = false;
+                let p2Vacant = false;
+                if (Array.isArray(currentRoomState.openSlots)) {
+                    p1Vacant = currentRoomState.openSlots.includes(1);
+                    p2Vacant = currentRoomState.openSlots.includes(2);
+                } else if (typeof currentRoomState.playerCount === 'number') {
+                    p1Vacant = currentRoomState.playerCount === 0;
+                    p2Vacant = currentRoomState.playerCount === 1;
+                } else {
+                    p1Vacant = Boolean(currentRoomState.p1Vacant ?? !currentRoomState.player1);
+                    p2Vacant = Boolean(currentRoomState.p2Vacant ?? !currentRoomState.player2);
+                }
+                if (p1Vacant) return 'player_1';
+                if (p2Vacant) return 'player_2';
+                return 'spectator';
+            };
+        }
+
+        async function createOnlineRoom() {
+            createRoomBtn.disabled = true;
+            const origText = createRoomBtn.innerHTML;
+            createRoomBtn.textContent = 'Creating room...';
+            const apiBase = getApiBase();
+            mpState.apiBase = apiBase;
+
+            try {
+                // 1. Create Room (24h) - Host is automatically Player 1
+                const createRes = await fetch(`${apiBase}/rooms`, { method: 'POST' });
+                if (!createRes.ok) throw new Error("Could not create room on server");
+                const createData = await createRes.json();
+                const roomId = createData.roomId;
+
+                mpState.active = true;
+                mpState.roomId = roomId;
+                mpState.playerNum = 1;
+                mpState.playerRole = 'P1';
+                mpState.token = createData.token;
+                mpState.opponentJoined = false;
+                mpState.lastTurnNumber = 0;
+                mpState.lastMsgId = 0;
+
+                try { sessionStorage.setItem('crunch_host_' + roomId, '1'); } catch(e) {}
+                persistSession(roomId, 'player_1');
+
+                // Initialize fresh standard game
+                initGame();
+
+                multiplayerModal.classList.add('hidden');
+                updateMultiplayerUI();
+                startMultiplayerPolling();
+                addLogEntry('System', `Room ${roomId} created (24h). Joined as Player 1 (Host). Waiting for opponent...`, 'text-sky-400 font-bold');
+            } catch (err) {
+                alert("Failed to host room: " + err.message);
+            } finally {
+                createRoomBtn.disabled = false;
+                createRoomBtn.innerHTML = origText;
+            }
+        }
+
+        async function reattachToRoom(roomId, playerNum, data) {
+            mpState.active = true;
+            mpState.roomId = roomId;
+            mpState.playerNum = playerNum;
+            mpState.playerRole = playerNum === 1 ? 'P1' : (playerNum === 2 ? 'P2' : 'spectator');
+            mpState.token = '';
+            mpState.opponentJoined = (playerNum === 0 || data.playerCount === 2);
+            mpState.lastTurnNumber = 0;
+            mpState.lastMsgId = 0;
+
+            initGame();
+
+            // Replay historical turns
+            if (data && data.turns && data.turns.length > 0) {
+                for (const t of data.turns) {
+                    if (t.data && t.data.action) {
+                        applyRemoteTurn(t.data.action);
+                    }
+                    if (t.turnNumber > mpState.lastTurnNumber) {
+                        mpState.lastTurnNumber = t.turnNumber;
+                    }
+                }
+            }
+
+            multiplayerModal.classList.add('hidden');
+            updateMultiplayerUI();
+            startMultiplayerPolling();
+            const roleLabel = playerNum === 1 ? 'Player 1 (Blue)' : (playerNum === 2 ? 'Player 2 (Crimson)' : 'Spectator');
+            addLogEntry('System', `Reattached to room ${roomId} as ${roleLabel}!`, 'text-emerald-400 font-bold');
+        }
+
+        async function joinAsSpectator(roomId) {
+            roomId = (roomId || '').trim().toUpperCase();
+            if (!roomId) return;
+
+            const apiBase = getApiBase();
+            mpState.apiBase = apiBase;
+
+            try {
+                const res = await fetch(`${apiBase}/rooms/${roomId}`);
+                if (!res.ok) throw new Error("Room not found");
+                const data = await res.json();
+
+                persistSession(roomId, 'spectator');
+                await reattachToRoom(roomId, 0, data);
+            } catch (err) {
+                alert("Failed to spectate: " + err.message);
+            }
+        }
+
+        async function enterOnlineRoom(roomId) {
+            roomId = (roomId || '').trim().toUpperCase();
+            if (!roomId) {
+                alert("Please enter a valid Room ID");
+                return;
+            }
+
+            if (enterRoomBtn) {
+                enterRoomBtn.disabled = true;
+                enterRoomBtn.textContent = 'Entering...';
+            }
+
+            const apiBase = getApiBase();
+            mpState.apiBase = apiBase;
+
+            try {
+                // The player joining makes a request for which slots are available
+                const slotsRes = await fetch(`${apiBase}/rooms/${roomId}/slots`);
+                if (!slotsRes.ok) {
+                    const errData = await slotsRes.json().catch(() => ({}));
+                    throw new Error(errData.error || "Room not found or server error");
+                }
+                const slotsData = await slotsRes.json();
+                const openSlots = slotsData.openSlots || [];
+
+                // Fetch room details for state & turns replay
+                const roomRes = await fetch(`${apiBase}/rooms/${roomId}`);
+                const roomState = roomRes.ok ? await roomRes.json() : slotsData;
+                roomState.openSlots = openSlots;
+
+                const isTabHost = sessionStorage.getItem('crunch_host_' + roomId) === '1';
+
+                // Only reattach as Player 1 if this specific tab was the host
+                if (isTabHost && !openSlots.includes(1)) {
+                    await reattachToRoom(roomId, 1, roomState);
+                    return;
+                }
+                // If this tab was already Player 2 and reconnected
+                if (sessionStorage.getItem('crunch_joined_' + roomId) === '2' && !openSlots.includes(2)) {
+                    await reattachToRoom(roomId, 2, roomState);
+                    return;
+                }
+
+                // If slots are open, join available slot (Player 2 is the only one if Player 1 joined)
+                if (openSlots.length > 0) {
+                    const targetSlot = openSlots.includes(2) ? 2 : openSlots[0];
+                    await joinOnlineRoom(roomId, targetSlot);
+                } else {
+                    // No slots open -> Join as spectator
+                    await joinAsSpectator(roomId);
+                }
+            } catch (err) {
+                alert("Failed to enter room: " + err.message);
+                checkRoomSlots(roomId, false);
+            } finally {
+                if (enterRoomBtn) {
+                    enterRoomBtn.disabled = false;
+                    enterRoomBtn.innerHTML = '🚀 Join Room';
+                }
+            }
+        }
+
+        async function checkRoomSlots(roomId, allowReattach = true) {
+            roomId = (roomId || '').trim().toUpperCase();
+            if (!roomId) {
+                alert("Please enter a valid Room ID");
+                return;
+            }
+
+            checkSlotsBtn.disabled = true;
+            checkSlotsBtn.textContent = 'Checking...';
+            const apiBase = getApiBase();
+            mpState.apiBase = apiBase;
+
+            try {
+                // Query GET /rooms/{id}/slots
+                const res = await fetch(`${apiBase}/rooms/${roomId}/slots`);
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || "Room not found or server error");
+                }
+                const data = await res.json();
+                const openSlots = data.openSlots || [];
+
+                // Check tab session if reattachment is allowed
+                const isTabHost = sessionStorage.getItem('crunch_host_' + roomId) === '1';
+                if (allowReattach && isTabHost && !openSlots.includes(1)) {
+                    const roomRes = await fetch(`${apiBase}/rooms/${roomId}`);
+                    const fullData = roomRes.ok ? await roomRes.json() : data;
+                    await reattachToRoom(roomId, 1, fullData);
+                    return;
+                }
+                if (allowReattach && sessionStorage.getItem('crunch_joined_' + roomId) === '2' && !openSlots.includes(2)) {
+                    const roomRes = await fetch(`${apiBase}/rooms/${roomId}`);
+                    const fullData = roomRes.ok ? await roomRes.json() : data;
+                    await reattachToRoom(roomId, 2, fullData);
+                    return;
+                }
+
+                renderSlotPicker(roomId, openSlots, Boolean(data.slotOpenedByInactivity));
+            } catch (err) {
+                alert("Check slots failed: " + err.message);
+                slotPickerSection.classList.add('hidden');
+            } finally {
+                checkSlotsBtn.disabled = false;
+                checkSlotsBtn.textContent = 'Pick Slot';
+            }
+        }
+
+        function renderSlotPicker(roomId, openSlots, slotOpenedByInactivity = false) {
+            slotPickerSection.classList.remove('hidden');
+
+            const hasSlot1 = openSlots.includes(1);
+            const hasSlot2 = openSlots.includes(2);
+
+            if (openSlots.length === 0) {
+                // No empty slots
+                noEmptySlotsMsg.classList.remove('hidden');
+                slotButtonsGroup.classList.add('hidden');
+                slotStatusBadge.className = 'code-font text-[10px] px-2 py-0.5 rounded font-bold bg-red-950 text-red-400 border border-red-800';
+                slotStatusBadge.textContent = 'NO EMPTY SLOTS';
+                return;
+            }
+
+            noEmptySlotsMsg.classList.add('hidden');
+            slotButtonsGroup.classList.remove('hidden');
+
+            if (slotOpenedByInactivity) {
+                slotStatusBadge.className = 'code-font text-[10px] px-2 py-0.5 rounded font-bold bg-amber-950 text-amber-300 border border-amber-800 animate-pulse';
+                slotStatusBadge.textContent = '⏱️ SLOT OPENED (5M INACTIVE)';
+            } else {
+                slotStatusBadge.className = 'code-font text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-950 text-emerald-400 border border-emerald-800';
+                slotStatusBadge.textContent = `${openSlots.length} SLOT${openSlots.length > 1 ? 'S' : ''} OPEN`;
+            }
+
+            // Slot 1 button configuration
+            if (hasSlot1) {
+                pickSlot1Btn.disabled = false;
+                pickSlot1Btn.className = 'p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16 bg-sky-950/40 border-sky-500/50 hover:border-sky-400 hover:bg-sky-900/50 cursor-pointer shadow-sm';
+                slot1StateText.className = 'text-[10px] font-semibold text-emerald-400';
+                slot1StateText.textContent = slotOpenedByInactivity ? '⚡ Take Over Slot (Inactive)' : '👉 Click to Join (Available)';
+            } else {
+                pickSlot1Btn.disabled = true;
+                pickSlot1Btn.className = 'p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16 bg-gray-900/40 border-gray-800 opacity-50 cursor-not-allowed';
+                slot1StateText.className = 'text-[10px] font-semibold text-gray-500';
+                slot1StateText.textContent = '🔒 Taken';
+            }
+
+            // Slot 2 button configuration
+            if (hasSlot2) {
+                pickSlot2Btn.disabled = false;
+                pickSlot2Btn.className = 'p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16 bg-rose-950/40 border-rose-500/50 hover:border-rose-400 hover:bg-rose-900/50 cursor-pointer shadow-sm';
+                slot2StateText.className = 'text-[10px] font-semibold text-emerald-400';
+                slot2StateText.textContent = slotOpenedByInactivity ? '⚡ Take Over Slot (Inactive)' : '👉 Click to Join (Available)';
+            } else {
+                pickSlot2Btn.disabled = true;
+                pickSlot2Btn.className = 'p-2.5 rounded-lg border text-xs font-bold text-left transition flex flex-col justify-between h-16 bg-gray-900/40 border-gray-800 opacity-50 cursor-not-allowed';
+                slot2StateText.className = 'text-[10px] font-semibold text-gray-500';
+                slot2StateText.textContent = '🔒 Taken';
+            }
+        }
+
+        async function joinOnlineRoom(roomId, slot = 0) {
+            roomId = (roomId || '').trim().toUpperCase();
+            if (!roomId) {
+                alert("Please enter a valid Room ID");
+                return;
+            }
+
+            if (slot === 1) {
+                pickSlot1Btn.disabled = true;
+                slot1StateText.textContent = 'Joining...';
+            } else if (slot === 2) {
+                pickSlot2Btn.disabled = true;
+                slot2StateText.textContent = 'Joining...';
+            }
+
+            const apiBase = getApiBase();
+            mpState.apiBase = apiBase;
+
+            try {
+                const joinRes = await fetch(`${apiBase}/rooms/${roomId}/join`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ player: slot })
+                });
+
+                if (!joinRes.ok) {
+                    const errData = await joinRes.json().catch(() => ({}));
+                    const errMsg = errData.error || "Could not join room";
+                    if (errMsg.toLowerCase().includes("no empty slots") || errMsg.toLowerCase().includes("room is full")) {
+                        slotPickerSection.classList.remove('hidden');
+                        noEmptySlotsMsg.classList.remove('hidden');
+                        slotButtonsGroup.classList.add('hidden');
+                        slotStatusBadge.className = 'code-font text-[10px] px-2 py-0.5 rounded font-bold bg-red-950 text-red-400 border border-red-800';
+                        slotStatusBadge.textContent = 'NO EMPTY SLOTS';
+                    }
+                    throw new Error(errMsg);
+                }
+
+                const joinData = await joinRes.json();
+
+                mpState.active = true;
+                mpState.roomId = roomId;
+                mpState.playerNum = joinData.player;
+                mpState.playerRole = joinData.player === 1 ? 'P1' : 'P2';
+                mpState.token = joinData.token;
+                mpState.opponentJoined = (joinData.playersCount === 2 || (joinData.openSlots && joinData.openSlots.length === 0));
+                mpState.lastTurnNumber = 0;
+                mpState.lastMsgId = 0;
+
+                try { sessionStorage.setItem('crunch_joined_' + roomId, String(joinData.player)); } catch(e) {}
+                persistSession(roomId, joinData.player === 1 ? 'player_1' : 'player_2');
+
+                initGame();
+
+                // If room already had turns (e.g. taking over an inactive slot mid-game), replay them
+                const detailsRes = await fetch(`${apiBase}/rooms/${roomId}`);
+                if (detailsRes.ok) {
+                    const details = await detailsRes.json();
+                    if (details.turns && details.turns.length > 0) {
+                        for (const t of details.turns) {
+                            if (t.data && t.data.action) {
+                                applyRemoteTurn(t.data.action);
+                            }
+                            if (t.turnNumber > mpState.lastTurnNumber) {
+                                mpState.lastTurnNumber = t.turnNumber;
+                            }
+                        }
+                    }
+                }
+
+                multiplayerModal.classList.add('hidden');
+                updateMultiplayerUI();
+                startMultiplayerPolling();
+                addLogEntry('System', `Joined room ${roomId} as Player ${mpState.playerNum}!`, 'text-emerald-400 font-bold');
+            } catch (err) {
+                alert("Failed to join room: " + err.message);
+                checkRoomSlots(roomId);
+            }
+        }
+
+        function updateMultiplayerUI() {
+            if (!mpState.active) {
+                multiplayerBanner.classList.add('hidden');
+                return;
+            }
+
+            multiplayerBanner.classList.remove('hidden');
+            mpRoomIdDisplay.textContent = mpState.roomId;
+
+            if (mpState.playerRole === 'spectator') {
+                mpRoleBadge.className = 'code-font px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                mpRoleBadge.textContent = 'Spectator (Read-Only)';
+            } else if (mpState.playerNum === 1) {
+                mpRoleBadge.className = 'code-font px-2 py-0.5 rounded text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40';
+                mpRoleBadge.textContent = 'You: Player 1 (Blue)';
+            } else {
+                mpRoleBadge.className = 'code-font px-2 py-0.5 rounded text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                mpRoleBadge.textContent = 'You: Player 2 (Crimson)';
+            }
+
+            updateUI();
+        }
+
+        async function sendTurnToServer(action) {
+            if (!mpState.active) return;
+            try {
+                const res = await fetch(`${mpState.apiBase}/rooms/${mpState.roomId}/turn`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        player: mpState.playerNum,
+                        token: mpState.token,
+                        data: { action }
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    addLogEntry('Error', data.error || 'Server rejected turn', 'text-red-400 font-bold');
+                } else if (data.turn) {
+                    mpState.lastTurnNumber = data.turn.turnNumber;
+                }
+            } catch (err) {
+                console.error("Turn submission error:", err);
+                addLogEntry('Network', 'Failed to submit turn to server', 'text-red-400');
+            }
+        }
+
+        function applyRemoteTurn(action) {
+            if (!action || state.winner || state.phase !== 'match') return;
+            executeAction(action, true);
+        }
+
+        function startMultiplayerPolling() {
+            stopMultiplayerPolling();
+
+            // Poll room & turns every 1000ms
+            mpState.turnPollInterval = setInterval(async () => {
+                if (!mpState.active) return;
+
+                // If waiting for opponent
+                if (!mpState.opponentJoined) {
+                    try {
+                        const res = await fetch(`${mpState.apiBase}/rooms/${mpState.roomId}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.playerCount === 2) {
+                                mpState.opponentJoined = true;
+                                updateMultiplayerUI();
+                                addLogEntry('System', 'Opponent connected! Game ready.', 'text-emerald-400 font-bold');
+                                if (mpState.playerRole === state.turn) {
+                                    calculateValidActions(state.turn);
+                                }
+                                renderBoard();
+                            }
+                        }
+                    } catch(e) {}
+                    return;
+                }
+
+                // Poll for new turns
+                try {
+                    const res = await fetch(`${mpState.apiBase}/rooms/${mpState.roomId}/turn?since=${mpState.lastTurnNumber}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.turns && data.turns.length > 0) {
+                            for (const t of data.turns) {
+                                if (t.turnNumber > mpState.lastTurnNumber) {
+                                    mpState.lastTurnNumber = t.turnNumber;
+                                    if (t.player !== mpState.playerNum && t.data && t.data.action) {
+                                        applyRemoteTurn(t.data.action);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {}
+            }, 1000);
+
+            // Poll for REST messages every 2000ms
+            mpState.msgPollInterval = setInterval(async () => {
+                if (!mpState.active) return;
+                try {
+                    const res = await fetch(`${mpState.apiBase}/rooms/${mpState.roomId}/messages?since=${mpState.lastMsgId}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.messages && data.messages.length > 0) {
+                            for (const m of data.messages) {
+                                if (m.id > mpState.lastMsgId) {
+                                    mpState.lastMsgId = m.id;
+                                    const pLabel = `Player ${m.player} 💬`;
+                                    const pColor = m.player === 1 ? 'text-sky-300' : 'text-rose-300';
+                                    addLogEntry(pLabel, m.content, pColor);
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {}
+            }, 2000);
+        }
+
+        function stopMultiplayerPolling() {
+            if (mpState.turnPollInterval) clearInterval(mpState.turnPollInterval);
+            if (mpState.msgPollInterval) clearInterval(mpState.msgPollInterval);
+            mpState.turnPollInterval = null;
+            mpState.msgPollInterval = null;
+        }
+
+        async function sendChatMessage() {
+            if (!mpState.active) {
+                alert("Join an online room to send messages!");
+                return;
+            }
+            const text = chatInput.value.trim();
+            if (!text) return;
+            chatInput.value = '';
+
+            try {
+                const res = await fetch(`${mpState.apiBase}/rooms/${mpState.roomId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        player: mpState.playerNum,
+                        token: mpState.token,
+                        message: text
+                    })
+                });
+                if (res.ok) {
+                    const msgData = await res.json();
+                    if (msgData.id > mpState.lastMsgId) {
+                        mpState.lastMsgId = msgData.id;
+                        addLogEntry(`Player ${mpState.playerNum} 💬`, msgData.content, mpState.playerNum === 1 ? 'text-sky-300' : 'text-rose-300');
+                    }
+                }
+            } catch(e) {
+                console.error("Message send error:", e);
+            }
+        }
+
+        function leaveMultiplayerRoom() {
+            if (mpState.roomId) {
+                clearSession(mpState.roomId);
+            }
+            stopMultiplayerPolling();
+            mpState.active = false;
+            mpState.roomId = null;
+            mpState.playerNum = null;
+            mpState.playerRole = null;
+            mpState.token = null;
+            mpState.opponentJoined = false;
+            multiplayerBanner.classList.add('hidden');
+            addLogEntry('System', 'Left room. Switched to local mode.', 'text-gray-400');
+            updateUI();
+            renderBoard();
+        }
+
         modalRadiusInput.addEventListener('input', updateModalStats);
         p1HandicapInput.addEventListener('input', updateModalStats);
         p2HandicapInput.addEventListener('input', updateModalStats);
@@ -998,6 +1788,32 @@
         resetBtn.addEventListener('click', initGame);
         playAgainBtn.addEventListener('click', () => setupModal.classList.remove('hidden'));
         undoBtn.addEventListener('click', undo);
+
+        multiplayerBtn.addEventListener('click', () => multiplayerModal.classList.remove('hidden'));
+        closeMpModalBtn.addEventListener('click', () => multiplayerModal.classList.add('hidden'));
+        createRoomBtn.addEventListener('click', createOnlineRoom);
+        enterRoomBtn.addEventListener('click', () => enterOnlineRoom(roomCodeInput.value));
+        checkSlotsBtn.addEventListener('click', () => checkRoomSlots(roomCodeInput.value, false));
+        roomCodeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enterOnlineRoom(roomCodeInput.value);
+            }
+        });
+        pickSlot1Btn.addEventListener('click', () => joinOnlineRoom(roomCodeInput.value, 1));
+        pickSlot2Btn.addEventListener('click', () => joinOnlineRoom(roomCodeInput.value, 2));
+        spectateBtn.addEventListener('click', () => joinAsSpectator(roomCodeInput.value));
+        mpLeaveBtn.addEventListener('click', leaveMultiplayerRoom);
+        mpCopyLinkBtn.addEventListener('click', () => {
+            const shareUrl = window.location.protocol.startsWith('http')
+                ? `${window.location.origin}${window.location.pathname}?room=${mpState.roomId}`
+                : mpState.roomId;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const prev = mpCopyLinkBtn.textContent;
+                mpCopyLinkBtn.textContent = '✅ Copied!';
+                setTimeout(() => { mpCopyLinkBtn.textContent = prev; }, 1500);
+            });
+        });
 
         soundToggle.addEventListener('click', () => {
             audio.init();
@@ -1013,6 +1829,13 @@
 
         window.onload = () => {
             updateModalStats();
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            if (roomParam) {
+                const code = roomParam.trim().toUpperCase();
+                roomCodeInput.value = code;
+                enterOnlineRoom(code);
+            }
         };
     </script>
 </body>
