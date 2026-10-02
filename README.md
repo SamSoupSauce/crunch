@@ -1,43 +1,120 @@
-# Crunch
+# 💥 CRUNCH (Rock Chess)
 
-## Preview
+<p align="center">
+  <img src="icon.svg" alt="Crunch Logo" width="120" height="120" style="border-radius: 24px;" />
+</p>
 
-![screen.jpg](screen.jpg)
+<p align="center">
+  <b>A game of long-form strategy, 3-axis spatial control, and psychological deception.</b><br />
+  Trap the enemy between <i>A Rock and a Hard Place</i> to achieve <b>CRUNCH</b>.
+</p>
 
-## Summary
+<p align="center">
+  <a href="https://samsoupsauce.github.io/crunch/"><strong>🎮 Play Live in Browser</strong></a> •
+  <a href="#-rules">Rules</a> •
+  <a href="#️-software-stack">Software Stack</a> •
+  <a href="RULES.md">Official Rules Spec</a>
+</p>
 
-Crunch is a game of long-form strategy and deception. It was created by a bored college student on a paper plate using a pen to draw grid lines and rocks as... Well... rocks. The concept revolves around trapping the enemy player between `A Rock And A Hard Place` in order to achieve, "Crunch", which wins the game. The limited player movement and long term consequences of doing nothing are in the works.
+---
 
-## Live Demo
+## 📸 Preview
 
-[GitHub Pages](https://samsoupsauce.github.io/crunch/)
+![Crunch Game Preview](screen.jpg)
 
-## Software Stack
+---
 
-- Three.js
+## 📖 Origin & Summary
 
-## Rules
+Crunch was invented by a college student on a paper plate using a pen to draw hexagonal grid lines and pebbles as... well, rocks.
 
-**Board**
+The core gameplay centers on trapping the opposing mover between neutral obstacles and immovable boundaries to trigger a lethal **Crunch**. Rock colors are purely cosmetic and positional—once play begins, **either player can move ANY rock on the board**, making every push a potential trap or counter-offensive.
 
-The board is hexagonal with a side length of 5 and 61 spaces.
+---
 
-**Turn Order**
+## ⚡ Features
 
-* Blue always goes first.
-* Each player gets one move per turn.
-* Play continues until a mover is crushed or a player surrenders.
+- **🎮 Responsive Main Menu**: Seamless navigation with Singleplayer (local play against a friend or self), online room creation, and room joining.
+- **🌐 Online 2-Player Multiplayer**:
+  - Ephemeral 24-hour rooms with lightweight REST turn synchronization.
+  - Quick room code sharing (`📋 Copy Room Code`) and deep linking via `?room=ROOM-...`.
+  - Inactivity slot reopening and seamless tab-scoped session recovery.
+  - Live spectator mode for matches in progress.
+- **🔊 Web Audio API Synthesizer**: Pure procedural sound effects for movement steps, rock pushes, and crunch impacts with no external audio assets.
+- **📜 Vector Event Log**: Move-by-move real-time match telemetry.
+- **📱 Zero-Dependency Web Client**: Pure HTML5, SVG board rendering, Vanilla JavaScript, and Tailwind CSS (via CDN).
 
-**Movement Rules**
+---
 
-1. The only piece a player controls is their color's mover.
-2. The mover can only move into one legal space at a time.
-3. The mover player can move a rock one space in the same direction of the mover, if there is no rock in said space, and if said space is not a map edge.
-4. A mover ( A ) is declared the winner if A pushes a rock into the opponent mover ( B ) under Hazardous Conditions.
-5. A rock can be moved by either mover.
-6. Movers can push each other, if there is not a rock behind them.
+## 📜 Rules
 
-**Hazardous Conditions**
+### The Board
+- Hexagonal grid with radius $R = 5$ (side length of 5 hexagons, **61 playable spaces**).
+- Movement occurs along 6 cardinal directions ($60^\circ$ vectors).
+- Outer perimeter edge serves as an immovable wall.
 
-Mover A's rock will enter mover B's space and the space past mover B in the direction mover A's rock is a wall or a rock.
+### Turn Order
+- **Player 1 (Blue)** moves first.
+- Players alternate turns, performing exactly **one legal action** per turn.
+- Play continues until a mover is crushed (**Crunch**) or a player surrenders.
 
+### Movement & Force Limit
+1. **Universal Rock Control**: Either player may push any rock on the board.
+2. **Simple Move**: Move your mover one space into an adjacent empty hex.
+3. **Pushing a Rock**: Push an adjacent rock one hex forward into an empty space (*follow-through movement advances both the rock and your mover*).
+4. **Physical Force Limit (1 Unit = 1 Rock)**: A mover can only push a single rock. You cannot push multiple rocks in a line, nor push a rock into a wall.
+5. **Pushing Opponents**: A mover can push an adjacent opponent into an empty hex.
+
+### 💥 The Crunch Condition
+A player immediately wins by pushing a rock into the enemy mover when the space directly behind the enemy (along the vector of the push) is blocked by:
+- A boundary wall, or
+- Another static rock.
+
+---
+
+## 🛠️ Software Stack
+
+- **Client**:
+  - HTML5 & SVG (Vector rendering)
+  - Vanilla JavaScript (Zero build step)
+  - Tailwind CSS (CDN)
+  - Web Audio API (Procedural sound synthesis)
+- **Backend (`server/`)**:
+  - Go (Standard library REST API)
+  - In-memory 24-hour TTL room store with automated Janitor cleanup
+- **Infrastructure & Deployment**:
+  - **Frontend**: GitHub Pages ([samsoupsauce.github.io/crunch](https://samsoupsauce.github.io/crunch/))
+  - **Backend**: Google Cloud Run & Artifact Registry via Cloud Build CI/CD
+
+---
+
+## 🚀 Local Development
+
+### 1. Web Client Only (Local Mode)
+Simply open `index.html` in any modern web browser:
+```bash
+open index.html
+```
+
+### 2. Full Stack (Local Backend + Web Client)
+Run the Go coordination server:
+```bash
+cd server
+go run ./cmd/server
+```
+The server will start at `http://localhost:8080`, automatically serving `index.html` and the REST API.
+
+### Run Tests
+```bash
+# Frontend session test suite
+node test_session.js
+
+# Backend Go tests
+cd server && go test -v ./...
+```
+
+---
+
+## 📄 License
+
+Licensed under the [MIT License](LICENSE).
