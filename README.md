@@ -116,18 +116,21 @@ Run the desktop app in development mode:
 npm start
 ```
 
-Build standalone desktop executables and installers:
+Build standalone desktop executables and installers (compiles both x64 and arm64):
 ```bash
 # Package unpackaged app folder into dist/
 npm run pack
 
-# Build distributable installers (.dmg, .zip, .exe, AppImage)
+# Build distributable installers (.dmg, .zip, .exe, AppImage, .deb) for x64 & arm64
 npm run dist
 
-# Target-specific platform builds
+# Target-specific platform builds (both x64 & arm64)
 npm run dist:mac
 npm run dist:win
 npm run dist:linux
+
+# Build all supported OS targets simultaneously
+npm run dist:all
 ```
 
 ### 4. Android Application (Capacitor)

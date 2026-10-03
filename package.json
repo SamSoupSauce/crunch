@@ -1,6 +1,6 @@
 {
   "name": "crunch-game",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A game of long-form strategy, 3-axis spatial control, and psychological deception.",
   "main": "main.js",
   "author": "Samuel L Meyers <sam@samuel-meyers.com>",
@@ -14,10 +14,11 @@
     "start": "electron .",
     "test": "node test_session.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:mac": "electron-builder --mac",
-    "dist:win": "electron-builder --win",
-    "dist:linux": "electron-builder --linux",
+    "dist": "electron-builder --x64 --arm64",
+    "dist:mac": "electron-builder --mac --x64 --arm64",
+    "dist:win": "electron-builder --win --x64 --arm64",
+    "dist:linux": "electron-builder --linux --x64 --arm64",
+    "dist:all": "electron-builder -mwl --x64 --arm64",
     "prepare:www": "node scripts/prepare-www.js",
     "android:sync": "npm run prepare:www && cap sync android",
     "android:open": "cap open android",
@@ -45,22 +46,58 @@
       "category": "public.app-category.board-games",
       "icon": "build/icon.icns",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     },
     "win": {
       "icon": "build/icon.ico",
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     },
     "linux": {
       "icon": "build/icon.png",
       "target": [
-        "AppImage",
-        "deb"
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "category": "Game"
     }
