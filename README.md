@@ -82,6 +82,9 @@ A player immediately wins by pushing a rock into the enemy mover when the space 
 - **Desktop Application**:
   - Electron 34 (Frameless / hiddenInset native window styling)
   - electron-builder (Cross-platform builds for macOS, Windows, Linux)
+- **Mobile Application (Android)**:
+  - Capacitor 8 (Hardware-accelerated native System WebView wrapper)
+  - Touch manipulation optimization, notch/safe-area viewport, and native back button handling
 - **Backend (`server/`)**:
   - Go (Standard library REST API)
   - In-memory 24-hour TTL room store with automated Janitor cleanup
@@ -125,6 +128,19 @@ npm run dist
 npm run dist:mac
 npm run dist:win
 npm run dist:linux
+```
+
+### 4. Android Application (Capacitor)
+Sync web assets and launch in Android Studio:
+```bash
+# Sync web bundle and assets into Android project
+npm run android:sync
+
+# Open project in Android Studio (build APK, run emulator or physical device)
+npm run android:open
+
+# Or build debug APK from CLI (requires Java and Android SDK configured)
+npm run android:build
 ```
 
 ### Run Tests

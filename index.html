@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Crunch (Rock Chess) — Custom Draft Engine</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -16,6 +16,8 @@
             background-color: #090c10;
             color: #c9d1d9;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         .code-font {
@@ -2127,6 +2129,22 @@
                     if (target && target.href && (target.href.startsWith('http://') || target.href.startsWith('https://'))) {
                         e.preventDefault();
                         window.electronAPI.openExternal(target.href);
+                    }
+                });
+            }
+
+            // Capacitor Android Native Back Button Support
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+                window.Capacitor.Plugins.App.addListener('backButton', () => {
+                    if (!rulesModal.classList.contains('hidden')) {
+                        rulesModal.classList.add('hidden');
+                    } else if (!multiplayerModal.classList.contains('hidden')) {
+                        multiplayerModal.classList.add('hidden');
+                        if (!mpState.active) mainMenuModal.classList.remove('hidden');
+                    } else if (mainMenuModal.classList.contains('hidden')) {
+                        mainMenuModal.classList.remove('hidden');
+                    } else {
+                        window.Capacitor.Plugins.App.exitApp();
                     }
                 });
             }

@@ -17,7 +17,11 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
-    "dist:linux": "electron-builder --linux"
+    "dist:linux": "electron-builder --linux",
+    "prepare:www": "node scripts/prepare-www.js",
+    "android:sync": "npm run prepare:www && cap sync android",
+    "android:open": "cap open android",
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
   },
   "build": {
     "appId": "com.samsoupsauce.crunch",
@@ -64,5 +68,11 @@
   "devDependencies": {
     "electron": "^34.2.0",
     "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
   }
 }

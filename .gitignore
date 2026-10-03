@@ -10,3 +10,8 @@ Thumbs.db
 node_modules/
 dist/
 *.log
+
+# Capacitor Web Bundle
+www/
+android/local.properties
+
