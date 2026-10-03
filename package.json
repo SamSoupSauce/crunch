@@ -21,7 +21,7 @@
     "prepare:www": "node scripts/prepare-www.js",
     "android:sync": "npm run prepare:www && cap sync android",
     "android:open": "cap open android",
-    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "android:build": "npm run android:sync && cd android && export JAVA_HOME=\"${JAVA_HOME:-/opt/homebrew/opt/openjdk@21}\" && ./gradlew assembleDebug"
   },
   "build": {
     "appId": "com.samsoupsauce.crunch",
